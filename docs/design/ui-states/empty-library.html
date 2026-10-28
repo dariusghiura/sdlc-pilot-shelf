@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your library is empty — Shelf</title>
+  <script>
+    // Theme hook used by capture-previews.mjs (?theme=light|dark); falls back to the OS preference.
+    const q = new URLSearchParams(location.search).get('theme');
+    document.documentElement.dataset.theme = q || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  </script>
+  <!-- Reference prototype only: the product self-hosts Literata (NFR-004). -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shelf.css">
+</head>
+<body>
+  <!-- UX-002: the empty library (FR-002). A heading, one sentence and the one "Add a book" button; nothing in the margin. -->
+  <a class="skip-link" href="#main">Skip to your library</a>
+  <div class="sheet">
+    <header class="masthead lined">
+      <p class="wordmark margin">Shelf</p>
+    </header>
+
+    <main id="main">
+      <div class="intro lined">
+        <h1 tabindex="-1">Your library is empty</h1>
+        <p class="meta">Add the books you want to read, are reading or have finished.</p>
+      </div>
+      <div class="lined">
+        <p class="empty-action"><a class="button" href="#add">Add a book</a></p>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,278 @@
+/* Shelf UI-state reference prototypes (UI-SPEC v1.0.0). Not product code.
+   Custom properties mirror docs/design/tokens.json v1.0.0: --theme-* is theme.<mode>.*, every other
+   name is the token path with dots as dashes. Layout and components follow the approved previews in
+   docs/design/previews/v1/; the radio buttons follow UX-106. */
+:root {
+  --theme-surface-page: #F5F7F4;
+  --theme-surface-field: #FFFFFF;
+  --theme-surface-accent: #2A47A6;
+  --theme-text-primary: #1B2140;
+  --theme-text-muted: #545B6E;
+  --theme-text-accent: #2A47A6;
+  --theme-text-on-accent: #FFFFFF;
+  --theme-text-error: #A1203A;
+  --theme-border-field: #5E6478;
+  --theme-border-field-invalid: #A1203A;
+  --theme-border-accent: #2A47A6;
+  --theme-control-radio-border: #5E6478;
+  --theme-control-radio-fill: #FFFFFF;
+  --theme-control-radio-checked: #2A47A6;
+  --theme-focus-ring: #2A47A6;
+  --theme-decoration-margin-rule: #E39AAE;
+
+  --font-family-body: 'Literata', Georgia, 'Times New Roman', serif;
+  --font-weight-regular: 400;
+  --font-weight-heading: 450;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-reading: 650;
+  --font-size-body: 1rem;
+  --font-size-note: 1rem;
+  --font-size-author: 1.125rem;
+  --font-size-field: 1.125rem;
+  --font-size-control: 1rem;
+  --font-size-title: 1.375rem;
+  --font-size-heading: 2.125rem;
+  --font-size-wordmark: 1.375rem;
+  --font-line-height-body: 1.5;
+  --font-line-height-heading: 1.1;
+  --font-line-height-title: 1.25;
+  --font-line-height-note: 1.4;
+  --font-line-height-field: 1.4;
+  --font-line-height-control: 1.2;
+  --font-letter-spacing-heading: -0.01em;
+  --font-letter-spacing-wordmark: 0.01em;
+
+  --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem;
+  --space-5: 1.25rem; --space-6: 2rem; --space-7: 3rem;
+
+  --layout-measure: 40rem;
+  --layout-gutter: 1rem;
+  --layout-margin-width: 1.25rem;
+  --layout-margin-gap: 1.25rem;
+  --layout-margin-inset: 1rem;
+  --layout-field-error-offset: 0.6rem;
+
+  --size-target-min: 2.75rem;
+  --size-field-min-height: 3rem;
+  --size-radio: 1.25rem;
+  --size-radio-dot: 0.625rem;
+
+  --border-width-field: 2px;
+  --border-width-field-invalid: 3px;
+  --border-width-button: 2px;
+  --border-width-radio: 2px;
+  --border-width-margin-rule: 2px;
+  --border-width-underline: 1px;
+
+  --radius-control: 3px;
+  --radius-focus: 2px;
+  --focus-width: 3px;
+  --focus-offset: 3px;
+  --focus-offset-field: 2px;
+  --text-underline-offset: 0.2em;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --theme-surface-page: #141A2C;
+  --theme-surface-field: #1B2238;
+  --theme-surface-accent: #A8B9FF;
+  --theme-text-primary: #E7E9F1;
+  --theme-text-muted: #A9AFC3;
+  --theme-text-accent: #A8B9FF;
+  --theme-text-on-accent: #141A2C;
+  --theme-text-error: #FF9DB0;
+  --theme-border-field: #8D94AB;
+  --theme-border-field-invalid: #FF9DB0;
+  --theme-border-accent: #A8B9FF;
+  --theme-control-radio-border: #8D94AB;
+  --theme-control-radio-fill: #1B2238;
+  --theme-control-radio-checked: #A8B9FF;
+  --theme-focus-ring: #A8B9FF;
+  --theme-decoration-margin-rule: #8E4A61;
+  color-scheme: dark;
+}
+/* layout.breakpoint: the .wide values. */
+@media (min-width: 48rem) {
+  :root {
+    --font-size-title: 1.75rem;
+    --font-size-heading: 2.75rem;
+    --font-size-wordmark: 1.5rem;
+    --layout-gutter: 2rem;
+    --layout-margin-width: 12rem;
+    --layout-margin-gap: 1.75rem;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--theme-surface-page);
+  color: var(--theme-text-primary);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body);
+  line-height: var(--font-line-height-body);
+  font-optical-sizing: auto;
+}
+.vh {
+  position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+:focus-visible { outline: var(--focus-width) solid var(--theme-focus-ring); outline-offset: var(--focus-offset); }
+a:focus-visible { border-radius: var(--radius-focus); }
+[tabindex="-1"]:focus { outline: none; }
+.skip-link {
+  position: absolute; left: var(--layout-gutter); top: -4rem;
+  padding: var(--space-2) var(--space-4);
+  background: var(--theme-surface-accent); color: var(--theme-text-on-accent);
+}
+.skip-link:focus { top: var(--space-2); }
+
+/* UX-101: one sheet with a single margin rule running its full height. */
+.sheet {
+  min-height: 100vh;
+  max-width: calc(var(--layout-margin-width) + var(--layout-margin-gap) + var(--layout-measure) + 2 * var(--layout-gutter));
+  margin: 0 auto;
+  padding: 0 var(--layout-gutter) var(--space-7);
+  background: linear-gradient(var(--theme-decoration-margin-rule), var(--theme-decoration-margin-rule)) no-repeat;
+  background-size: var(--border-width-margin-rule) 100%;
+  background-position: calc(var(--layout-gutter) + var(--layout-margin-width)) 0;
+}
+.lined {
+  display: grid;
+  grid-template-columns: var(--layout-margin-width) minmax(0, 1fr);
+  column-gap: var(--layout-margin-gap);
+}
+.lined > * { grid-column: 2; }
+
+/* At least one 44px row tall with or without the button, so the heading sits at the same place on every page. */
+.masthead { min-height: calc(var(--size-target-min) + 2 * var(--space-5)); padding-block: var(--space-5); align-items: center; }
+.wordmark {
+  margin: 0;
+  font-size: var(--font-size-wordmark);
+  font-style: italic;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--font-letter-spacing-wordmark);
+}
+.wordmark a { color: inherit; text-decoration: none; display: inline-flex; align-items: center; min-height: var(--size-target-min); }
+
+.intro { padding-block: var(--space-6); }
+.intro--form { padding-block: var(--space-6) var(--space-5); }
+h1 {
+  margin: 0;
+  font-size: var(--font-size-heading);
+  font-weight: var(--font-weight-heading);
+  line-height: var(--font-line-height-heading);
+  letter-spacing: var(--font-letter-spacing-heading);
+  overflow-wrap: anywhere;
+}
+.meta { margin: var(--space-3) 0 0; color: var(--theme-text-muted); }
+
+/* UX-103 */
+.button {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: var(--size-target-min);
+  padding: 0 var(--space-5);
+  border: var(--border-width-button) solid var(--theme-border-accent);
+  border-radius: var(--radius-control);
+  background: var(--theme-surface-accent);
+  color: var(--theme-text-on-accent);
+  font: var(--font-weight-semibold) var(--font-size-control)/var(--font-line-height-control) var(--font-family-body);
+  text-decoration: none;
+  cursor: pointer;
+}
+.button:focus-visible { border-radius: var(--radius-control); }
+/* UX-104 */
+.link-button {
+  display: inline-flex; align-items: center;
+  min-height: var(--size-target-min);
+  padding: 0 var(--space-3);
+  border: 0; background: none;
+  color: var(--theme-text-accent);
+  font: var(--font-weight-medium) var(--font-size-control)/var(--font-line-height-control) var(--font-family-body);
+  text-decoration: underline;
+  text-decoration-thickness: var(--border-width-underline);
+  text-underline-offset: var(--text-underline-offset);
+  cursor: pointer;
+}
+.empty-action { margin: 0; }
+.actions-row { padding-top: var(--space-6); }
+.form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4); }
+
+/* UX-105 */
+.field { padding-block: var(--space-4); }
+.label, legend {
+  display: block;
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  font-size: var(--font-size-field);
+  font-weight: var(--font-weight-semibold);
+}
+.error, .save-failure {
+  margin: 0 0 var(--space-2);
+  color: var(--theme-text-error);
+  font-size: var(--font-size-note);
+  font-style: italic;
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--font-line-height-note);
+}
+.input {
+  width: 100%;
+  min-height: var(--size-field-min-height);
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-width-field) solid var(--theme-border-field);
+  border-radius: var(--radius-control);
+  background: var(--theme-surface-field);
+  color: var(--theme-text-primary);
+  font: var(--font-weight-regular) var(--font-size-field)/var(--font-line-height-field) var(--font-family-body);
+}
+.input[aria-invalid="true"] { border-color: var(--theme-border-field-invalid); border-width: var(--border-width-field-invalid); }
+.input:focus-visible { outline-offset: var(--focus-offset-field); }
+
+/* UX-106: a token-drawn radio button (the browser-drawn one fails 1.4.11 in the dark theme). */
+fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
+.choices { display: grid; gap: var(--space-1); }
+.choice {
+  display: flex; align-items: center; gap: var(--space-3);
+  min-height: var(--size-target-min);
+  font-size: var(--font-size-field);
+  cursor: pointer;
+}
+.choice input {
+  appearance: none;
+  flex: none;
+  display: grid; place-content: center;
+  width: var(--size-radio); height: var(--size-radio); margin: 0;
+  border: var(--border-width-radio) solid var(--theme-control-radio-border);
+  border-radius: 50%;
+  background: var(--theme-control-radio-fill);
+  cursor: pointer;
+}
+.choice input:checked { border-color: var(--theme-control-radio-checked); }
+.choice input:checked::before {
+  content: "";
+  width: var(--size-radio-dot); height: var(--size-radio-dot);
+  border-radius: 50%;
+  background: var(--theme-control-radio-checked);
+}
+@media (forced-colors: active) {
+  .choice input { appearance: auto; }
+  .choice input:checked::before { content: none; }
+}
+
+/* UX-107: the save-failure message sits directly above the actions it belongs to. */
+.save-failure { margin: 0 0 var(--space-4); }
+
+@media (max-width: 47.99rem) {
+  .masthead { display: flex; justify-content: space-between; gap: var(--space-4); padding-left: calc(var(--layout-margin-width) + var(--layout-margin-gap)); }
+}
+/* Desktop: margin content hangs right-aligned against the rule. */
+@media (min-width: 48rem) {
+  .lined > .margin { grid-column: 1; padding-right: var(--layout-margin-inset); }
+  .masthead .wordmark { grid-column: 1; text-align: right; }
+  .masthead .button { grid-column: 2; justify-self: end; }
+  .field .label { grid-row: 1; }
+  .field .error { grid-column: 1; grid-row: 2; align-self: start; text-align: right; margin: 0; padding-top: var(--layout-field-error-offset); }
+  .field .input { grid-row: 2; align-self: start; }
+}

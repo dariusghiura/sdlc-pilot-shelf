@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edit book — Shelf</title>
+  <script>
+    // Theme hook used by capture-previews.mjs (?theme=light|dark); falls back to the OS preference.
+    const q = new URLSearchParams(location.search).get('theme');
+    document.documentElement.dataset.theme = q || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  </script>
+  <!-- Reference prototype only: the product self-hosts Literata (NFR-004). -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shelf.css">
+</head>
+<body>
+  <!-- UX-004 (edit form, FR-004) after "Save changes" could not be stored: UX-107 (FR-006 AC-3).
+       The reader changed the status from Reading to Finished; everything they entered stays in place.
+       The radio buttons are drawn as UX-106 specifies. -->
+  <a class="skip-link" href="#main">Skip to the form</a>
+  <div class="sheet">
+    <header class="masthead lined">
+      <p class="wordmark margin"><a href="#library">Shelf</a></p>
+    </header>
+
+    <main id="main">
+      <form action="#library" method="post" novalidate aria-labelledby="form-heading">
+        <div class="intro intro--form lined">
+          <h1 id="form-heading" tabindex="-1">Edit book</h1>
+        </div>
+
+        <div class="field lined">
+          <label class="label" for="title">Title</label>
+          <input class="input" id="title" name="title" type="text" value="Dune" required autocomplete="off">
+        </div>
+
+        <div class="field lined">
+          <label class="label" for="author">Author (optional)</label>
+          <input class="input" id="author" name="author" type="text" value="Frank Herbert" autocomplete="off">
+        </div>
+
+        <div class="field lined">
+          <fieldset>
+            <legend>Reading status</legend>
+            <div class="choices">
+              <label class="choice"><input type="radio" name="status" value="want-to-read"> Want to read</label>
+              <label class="choice"><input type="radio" name="status" value="reading"> Reading</label>
+              <label class="choice"><input type="radio" name="status" value="finished" checked> Finished</label>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="actions-row lined">
+          <div>
+            <p class="save-failure" id="save-failure" tabindex="-1"><span class="vh">Error: </span>This change wasn't saved. Your browser didn't let Shelf store it. Try again, or check that this browser allows sites to store data.</p>
+            <div class="form-actions">
+              <button class="button" type="submit">Save changes</button>
+              <a class="link-button" href="#library">Cancel</a>
+            </div>
+          </div>
+        </div>
+      </form>
+    </main>
+  </div>
+  <script>
+    // As UX-107 specifies, focus moves to the message after the failed save (this scrolls it into view on short screens).
+    document.getElementById('save-failure').focus();
+  </script>
+</body>
+</html>
