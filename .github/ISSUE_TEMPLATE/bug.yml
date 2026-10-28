@@ -1,0 +1,54 @@
+name: Bug
+description: Behaviour that contradicts an approved requirement or UI spec.
+title: "[Bug] "
+labels: ["type:bug"]
+body:
+  - type: input
+    id: requirements
+    attributes:
+      label: Requirement IDs
+      description: The FR/NFR/UX the behaviour violates. If none applies, it may be a change request instead.
+      placeholder: "FR-003 AC-2, UX-004"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected (per spec)
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment and version
+      placeholder: "local / staging, commit SHA, browser"
+  - type: textarea
+    id: specs
+    attributes:
+      label: Spec versions
+      value: |
+        PRD v
+        ARCH v
+        GUIDELINES v
+        BACKLOG v
+    validations:
+      required: true
+  - type: textarea
+    id: blocked-by
+    attributes:
+      label: Blocked by
+      value: none
+    validations:
+      required: true

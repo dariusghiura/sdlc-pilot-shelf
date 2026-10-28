@@ -1,0 +1,113 @@
+name: Feature slice
+description: One small vertical slice from the approved backlog, implementable as a single focused PR.
+title: "[Slice] "
+labels: ["type:feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Slices come from the **approved** `docs/plan/backlog.md`. Don't introduce requirements here.
+        Only the repository owner adds the `ready` label. `gate.mjs issue <n>` checks this form's fields, so keep the headings unchanged.
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome
+      description: What is true for the user when this slice is done.
+    validations:
+      required: true
+  - type: input
+    id: requirements
+    attributes:
+      label: Requirement IDs
+      placeholder: "FR-003, NFR-002"
+    validations:
+      required: true
+  - type: input
+    id: ux
+    attributes:
+      label: UX IDs and reference previews
+      placeholder: "UX-004 (docs/design/previews/v1/list-desktop-light.png) or n/a"
+  - type: input
+    id: architecture
+    attributes:
+      label: Architecture decisions and contracts
+      placeholder: "ADR-002, docs/api/openapi.yaml#/paths/~1books"
+  - type: textarea
+    id: specs
+    attributes:
+      label: Spec versions
+      description: Approved versions this slice was planned against. Remove lines that do not apply.
+      value: |
+        PRD v
+        DESIGN-BRIEF v
+        UI-SPEC v
+        TOKENS v
+        ARCH v
+        GUIDELINES v
+        BACKLOG v
+    validations:
+      required: true
+  - type: textarea
+    id: in-scope
+    attributes:
+      label: In scope
+    validations:
+      required: true
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Given/When/Then, numbered AC-1, AC-2…
+      placeholder: |
+        - AC-1 Given …, when …, then …
+    validations:
+      required: true
+  - type: textarea
+    id: tests
+    attributes:
+      label: Test expectations
+      description: Which levels (unit, integration, e2e, visual) must prove which ACs.
+    validations:
+      required: true
+  - type: textarea
+    id: visual
+    attributes:
+      label: Visual QA
+      description: Viewports, themes and states to verify against the reference previews. "n/a" for non-UI slices.
+  - type: textarea
+    id: blocked-by
+    attributes:
+      label: Blocked by
+      placeholder: "#12, #15, or none"
+    validations:
+      required: true
+  - type: dropdown
+    id: size
+    attributes:
+      label: Size
+      options: ["XS", "S", "M"]
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options: ["P0", "P1", "P2"]
+    validations:
+      required: true
+  - type: checkboxes
+    id: dod
+    attributes:
+      label: Definition of Done
+      options:
+        - label: Every acceptance criterion is covered by a test or recorded evidence
+        - label: CI is green
+        - label: PR links this issue, requirement IDs and the spec versions read
+        - label: UI changes include screenshots at the reference viewports
+        - label: Review findings are addressed or explicitly accepted by the owner

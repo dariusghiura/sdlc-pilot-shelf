@@ -1,0 +1,57 @@
+name: Spec change request
+description: A gap, conflict or needed change in an approved document. Work that depends on it stops until this is approved.
+title: "[CR] "
+labels: ["type:spec-change"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Agents draft these when a spec is missing, contradictory or wrong. Only the owner approves.
+        After approval, the affected documents are reopened (`status: draft`, version bumped), updated and re-approved.
+  - type: input
+    id: found-during
+    attributes:
+      label: Found during
+      placeholder: "Issue #42 / PR #57 / Stage C architecture"
+    validations:
+      required: true
+  - type: textarea
+    id: affected
+    attributes:
+      label: Affected documents and IDs
+      placeholder: |
+        PRD v1.0.0: FR-004 (AC-2)
+        UI-SPEC v1.0.0: UX-007
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Quote the conflicting or missing parts exactly.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+    validations:
+      required: true
+  - type: dropdown
+    id: reopens
+    attributes:
+      label: Gates reopened
+      multiple: true
+      options:
+        - PRD (product scope)
+        - Design Phase 1 (visual identity), which also reopens Phase 2
+        - Design Phase 2 (UI spec / tokens)
+        - Architecture / ADR
+        - Backlog
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact on open issues and PRs
+      placeholder: "#42 and #43 lose `ready` until re-approved"
