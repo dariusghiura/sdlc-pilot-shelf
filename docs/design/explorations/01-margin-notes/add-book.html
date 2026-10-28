@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Add a book — Direction 01 Margin notes</title>
+  <script>
+    // Theme hook used by capture-previews.mjs (?theme=light|dark); falls back to the OS preference.
+    const q = new URLSearchParams(location.search).get('theme');
+    document.documentElement.dataset.theme = q || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-surface: #F5F7F4;
+      --color-text: #1B2140;
+      --color-text-muted: #545B6E;
+      --color-accent: #2A47A6;
+      --color-on-accent: #FFFFFF;
+      --color-margin-rule: #E39AAE;
+      --color-error: #A1203A;
+      --color-field: #FFFFFF;
+      --color-field-border: #5E6478;
+      --font-body: 'Literata', Georgia, 'Times New Roman', serif;
+      --size-note: 1rem;
+      --size-field: 1.125rem;
+      --size-heading: 2.125rem;
+      --size-wordmark: 1.375rem;
+      --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem;
+      --space-5: 1.25rem; --space-6: 2rem; --space-7: 3rem;
+      --gutter: 1rem;
+      --margin-width: 1.25rem;
+      --margin-gap: 1.25rem;
+      --measure: 40rem;
+      --radius-control: 3px;
+      --target-min: 2.75rem;
+      color-scheme: light;
+    }
+    :root[data-theme="dark"] {
+      --color-surface: #141A2C;
+      --color-text: #E7E9F1;
+      --color-text-muted: #A9AFC3;
+      --color-accent: #A8B9FF;
+      --color-on-accent: #141A2C;
+      --color-margin-rule: #8E4A61;
+      --color-error: #FF9DB0;
+      --color-field: #1B2238;
+      --color-field-border: #8D94AB;
+      color-scheme: dark;
+    }
+    @media (min-width: 48rem) {
+      :root {
+        --size-heading: 2.75rem;
+        --size-wordmark: 1.5rem;
+        --gutter: 2rem;
+        --margin-width: 12rem;
+        --margin-gap: 1.75rem;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--color-surface);
+      color: var(--color-text);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.5;
+      font-optical-sizing: auto;
+    }
+    .vh {
+      position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
+    :focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; border-radius: 2px; }
+    .skip-link { position: absolute; left: var(--gutter); top: -4rem; padding: var(--space-2) var(--space-4); background: var(--color-accent); color: var(--color-on-accent); }
+    .skip-link:focus { top: var(--space-2); }
+
+    .sheet {
+      min-height: 100vh;
+      max-width: calc(var(--margin-width) + var(--margin-gap) + var(--measure) + 2 * var(--gutter));
+      margin: 0 auto;
+      padding: 0 var(--gutter) var(--space-7);
+      background: linear-gradient(var(--color-margin-rule), var(--color-margin-rule)) no-repeat;
+      background-size: 2px 100%;
+      background-position: calc(var(--gutter) + var(--margin-width)) 0;
+    }
+    .lined {
+      display: grid;
+      grid-template-columns: var(--margin-width) minmax(0, 1fr);
+      column-gap: var(--margin-gap);
+    }
+    .lined > * { grid-column: 2; }
+
+    .masthead { padding-block: var(--space-5); align-items: center; }
+    .wordmark {
+      margin: 0;
+      font-size: var(--size-wordmark);
+      font-style: italic;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+    .wordmark a { color: inherit; text-decoration: none; display: inline-flex; align-items: center; min-height: var(--target-min); }
+
+    .intro { padding-block: var(--space-6) var(--space-5); }
+    h1 {
+      margin: 0;
+      font-size: var(--size-heading);
+      font-weight: 450;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+
+    .field { padding-block: var(--space-4); }
+    .label, legend {
+      display: block;
+      margin: 0 0 var(--space-2);
+      padding: 0;
+      font-size: var(--size-field);
+      font-weight: 600;
+    }
+    .error {
+      margin: 0 0 var(--space-2);
+      color: var(--color-error);
+      font-size: var(--size-note);
+      font-style: italic;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    .input {
+      width: 100%;
+      min-height: 3rem;
+      padding: var(--space-2) var(--space-3);
+      border: 2px solid var(--color-field-border);
+      border-radius: var(--radius-control);
+      background: var(--color-field);
+      color: var(--color-text);
+      font: 400 var(--size-field)/1.4 var(--font-body);
+    }
+    .input[aria-invalid="true"] { border-color: var(--color-error); border-width: 3px; }
+    .input:focus-visible { outline-offset: 2px; }
+
+    fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
+    .choices { display: grid; gap: var(--space-1); }
+    .choice {
+      display: flex; align-items: center; gap: var(--space-3);
+      min-height: var(--target-min);
+      font-size: var(--size-field);
+      cursor: pointer;
+    }
+    .choice input {
+      width: 1.25rem; height: 1.25rem; margin: 0;
+      accent-color: var(--color-accent);
+    }
+
+    .form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4); padding-top: var(--space-6); }
+    .button {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: var(--target-min);
+      padding: 0 var(--space-5);
+      border: 2px solid var(--color-accent);
+      border-radius: var(--radius-control);
+      background: var(--color-accent);
+      color: var(--color-on-accent);
+      font: 600 1rem/1.2 var(--font-body);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .link-button {
+      display: inline-flex; align-items: center;
+      min-height: var(--target-min);
+      padding: 0 var(--space-3);
+      color: var(--color-accent);
+      font: 500 1rem/1.2 var(--font-body);
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.2em;
+    }
+
+    @media (max-width: 47.99rem) {
+      .masthead { padding-left: calc(var(--margin-width) + var(--margin-gap)); display: block; }
+    }
+    /* Desktop: the Title error hangs in the margin, next to the field it belongs to. */
+    @media (min-width: 48rem) {
+      .lined > .margin { grid-column: 1; padding-right: var(--space-4); }
+      .masthead .wordmark { text-align: right; }
+      .field--title .label { grid-row: 1; }
+      .field--title .error { grid-column: 1; grid-row: 2; align-self: start; text-align: right; margin: 0; padding-top: 0.6rem; }
+      .field--title .input { grid-row: 2; align-self: start; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the form</a>
+  <div class="sheet">
+    <header class="masthead lined">
+      <p class="wordmark margin"><a href="library.html">Shelf</a></p>
+    </header>
+
+    <main id="main">
+      <form action="library.html" novalidate aria-labelledby="form-heading">
+        <div class="intro lined">
+          <h1 id="form-heading">Add a book</h1>
+        </div>
+
+        <div class="field field--title lined">
+          <label class="label" for="title">Title</label>
+          <p class="error margin" id="title-error"><span class="vh">Error: </span>Enter a title. A book can't be added without one.</p>
+          <input class="input" id="title" name="title" type="text" value="" maxlength="400" aria-invalid="true" aria-describedby="title-error" autofocus>
+        </div>
+
+        <div class="field lined">
+          <label class="label" for="author">Author (optional)</label>
+          <input class="input" id="author" name="author" type="text" value="Becky Chambers" maxlength="400">
+        </div>
+
+        <div class="field lined">
+          <fieldset>
+            <legend>Reading status</legend>
+            <div class="choices">
+              <label class="choice"><input type="radio" name="status" value="want"> Want to read</label>
+              <label class="choice"><input type="radio" name="status" value="reading" checked> Reading</label>
+              <label class="choice"><input type="radio" name="status" value="finished"> Finished</label>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="form-actions-row lined">
+          <div class="form-actions">
+            <button class="button" type="submit">Add book</button>
+            <a class="link-button" href="library.html">Cancel</a>
+          </div>
+        </div>
+      </form>
+    </main>
+  </div>
+</body>
+</html>
