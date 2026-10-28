@@ -1,0 +1,82 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc", "jsx-a11y"],
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }],
+    "react/no-danger": "error",
+    "no-restricted-globals": [
+      "error",
+      { "name": "fetch", "message": "Shelf makes no network requests (NFR-004)." },
+      { "name": "XMLHttpRequest", "message": "Shelf makes no network requests (NFR-004)." },
+      { "name": "WebSocket", "message": "Shelf makes no network requests (NFR-004)." },
+      { "name": "EventSource", "message": "Shelf makes no network requests (NFR-004)." },
+      { "name": "localStorage", "message": "Books live in IndexedDB only (ADR-002)." },
+      { "name": "sessionStorage", "message": "Books live in IndexedDB only (ADR-002)." },
+      { "name": "indexedDB", "message": "Only src/storage/ touches IndexedDB (ADR-002)." }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["src/storage/**"],
+      "rules": {
+        "no-restricted-globals": [
+          "error",
+          { "name": "fetch", "message": "Shelf makes no network requests (NFR-004)." },
+          { "name": "XMLHttpRequest", "message": "Shelf makes no network requests (NFR-004)." },
+          { "name": "WebSocket", "message": "Shelf makes no network requests (NFR-004)." },
+          { "name": "EventSource", "message": "Shelf makes no network requests (NFR-004)." },
+          { "name": "localStorage", "message": "Books live in IndexedDB only (ADR-002)." },
+          { "name": "sessionStorage", "message": "Books live in IndexedDB only (ADR-002)." }
+        ],
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              { "group": ["react", "react-dom", "react-dom/*", "**/app/**", "**/pages/**", "**/components/**"], "message": "src/storage depends only on src/books (GUIDELINES section 3)." }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/books/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              { "group": ["react", "react-dom", "react-dom/*", "**/app/**", "**/pages/**", "**/components/**", "**/storage/**"], "message": "src/books is plain TypeScript with no dependencies (GUIDELINES section 3)." }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/components/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              { "group": ["**/app/**", "**/pages/**", "**/storage/**"], "message": "Components get data and callbacks through props (GUIDELINES section 3)." }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/pages/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              { "group": ["**/app/**", "**/storage/**"], "message": "Pages get books and callbacks through props from src/app (GUIDELINES section 3)." }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
