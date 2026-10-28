@@ -9,7 +9,7 @@
 | Navigation model | A sticky top toolbar: wordmark, where the library lives, and "Add a book". The column headings stick under it. |
 | Layout structure | A table: Title, Author, Status, actions. On phones each row becomes two lines (title, then author and status) with icon actions. |
 | Information density | Compact: about 16 rows per desktop screen, about 10 on a phone. |
-| Typographic system | One family, Atkinson Hyperlegible (designed for low-vision readers). Major-second scale (1.125), everything between 16 and 29px, contrast by weight (bold titles, regular authors), not by size. |
+| Typographic system | One family, Atkinson Hyperlegible (designed for low-vision readers). Major-second scale (1.125), everything between 16 and 25px, contrast by weight (bold titles, regular authors), not by size. |
 | Composition | Left-aligned full-width grid. The eye runs down the title column. Alternating pale bands, like green-bar continuous paper, keep the reader on the line. |
 | Interaction emphasis | Inline. "Add a book" opens a new row at the top of the ledger; "Edit" turns a row into fields. The list never leaves the screen. |
 
@@ -85,4 +85,12 @@ phone
 
 | Round | What I saw in the renders | What changed |
 |---|---|---|
-| 1 | *(filled in after the first render)* | |
+| 1 | Desktop rows were 52px, so only about 13 fitted on screen, short of the compact target. | Rows are now 44px (the target height of their buttons): about 16 per desktop screen. |
+| 1 | 24 bold, underlined Edit and Delete links made the right edge of the ledger the loudest part of the page. | Actions are regular weight; titles keep the bold. |
+| 1 | Phone: status was pushed to the right edge, so it moved from row to row and dropped to its own line under long authors. | Status now has a fixed column on line 2, so the circles line up down the list. Below 360px, author and status stack. |
+| 1 | Dark: the 2px toolbar rule in near-white was harsh. | The rule uses a muted green-grey in dark. |
+| 1 | While the add row is open, the toolbar's "Add a book" looked the same as when closed. | It switches to an outlined style while expanded (`aria-expanded="true"`). |
+| 2 | Dark add row: the invalid Title field lost its error border, because a dark-theme field rule outranked the error rule. | Field borders are now a themed token, so the error border wins in both themes. |
+| 1 | Checked: 320px wide (no horizontal scrolling), both themes, 44px targets everywhere. | No change. |
+| — | Atkinson Hyperlegible has no Cyrillic, so "Мастер и Маргарита" renders in the system fallback (visible in the desktop renders). | Phase 2 must choose a fallback stack, or a family with wider script coverage, for any-script titles (FR-001 edge cases). |
+| — | Not visible in the renders: the focus ring on the Title field (the headless capture does not give the page focus). | Phase 2 should capture focus states in the running app. |

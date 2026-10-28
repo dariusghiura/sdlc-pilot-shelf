@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Library — Direction 03 Bedside stack</title>
+  <script>
+    // Theme hook used by capture-previews.mjs (?theme=light|dark); falls back to the OS preference.
+    const q = new URLSearchParams(location.search).get('theme');
+    document.documentElement.dataset.theme = q || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-surface: #E8EBF0;
+      --color-panel: #FFFFFF;
+      --color-text: #1E2230;
+      --color-text-muted: #4A5163;
+      --color-accent: #263A66;
+      --color-on-accent: #FFFFFF;
+      --color-gilt: #F3E6C4;
+      --color-gilt-muted: #E2D4B0;
+      --color-ribbon: #C23A4B;
+      --color-spine-edge: rgba(30, 34, 48, 0.35);
+      --cloth-oxblood: #6E2433;
+      --cloth-bottle: #1F4A3C;
+      --cloth-navy: #263A66;
+      --cloth-plum: #4B2C5E;
+      --cloth-bronze: #6B4A14;
+      --cloth-slate: #3D4B55;
+      --font-body: 'Archivo', 'Segoe UI', system-ui, sans-serif;
+      --width-condensed: 75%;
+      --width-wordmark: 62%;
+      --size-spine-title: 1.25rem;
+      --size-heading: 1.9375rem;
+      --size-wordmark: 1.5625rem;
+      --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem; --space-5: 1.5rem; --space-6: 2rem; --space-7: 3rem;
+      --gutter: 1rem;
+      --stack-max: 56rem;
+      --inset-scale: 0.35;
+      --radius-spine: 2px 5px 5px 2px;
+      --radius-control: 4px;
+      --target-min: 2.75rem;
+      color-scheme: light;
+    }
+    :root[data-theme="dark"] {
+      --color-surface: #191B22;
+      --color-panel: #242733;
+      --color-text: #E6E8EE;
+      --color-text-muted: #A7ADBC;
+      --color-accent: #E3D3A6;
+      --color-on-accent: #1E2230;
+      --color-ribbon: #D9586A;
+      --color-spine-edge: rgba(255, 255, 255, 0.10);
+      color-scheme: dark;
+    }
+    @media (min-width: 48rem) {
+      :root {
+        --gutter: 3rem;
+        --size-spine-title: 1.375rem;
+        --size-heading: 2.4375rem;
+        --inset-scale: 1;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--color-surface);
+      color: var(--color-text);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+    .vh {
+      position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
+    :focus-visible { outline: 3px solid var(--color-accent); outline-offset: 2px; border-radius: 2px; }
+    .skip-link { position: absolute; left: var(--gutter); top: -4rem; padding: var(--space-2) var(--space-4); background: var(--color-accent); color: var(--color-on-accent); }
+    .skip-link:focus { top: var(--space-2); }
+
+    .page { max-width: calc(var(--stack-max) + 2 * var(--gutter)); margin: 0 auto; padding: var(--space-5) var(--gutter) var(--space-7); }
+
+    .wordmark {
+      margin: 0;
+      font-size: var(--size-wordmark);
+      font-stretch: var(--width-wordmark);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0.01em;
+    }
+    .top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: var(--space-4); padding: var(--space-5) 0 var(--space-5); }
+    h1 {
+      margin: 0;
+      font-size: var(--size-heading);
+      font-stretch: var(--width-condensed);
+      font-weight: 700;
+      line-height: 1.05;
+    }
+    .meta { margin: var(--space-2) 0 0; color: var(--color-text-muted); }
+    .button {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: var(--target-min);
+      padding: 0 var(--space-5);
+      border: 2px solid var(--color-accent);
+      border-radius: var(--radius-control);
+      background: var(--color-accent);
+      color: var(--color-on-accent);
+      font: 650 1rem/1.2 var(--font-body);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    /* The stack */
+    .stack { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+    .spine {
+      --cloth: var(--cloth-navy);
+      position: relative;
+      width: calc(100% - var(--inset, 0px) * var(--inset-scale));
+      padding: var(--space-3) var(--space-4) var(--space-3) 2.25rem;
+      border-radius: var(--radius-spine);
+      background: var(--cloth);
+      color: var(--color-gilt);
+      box-shadow: 0 1px 0 var(--color-spine-edge), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      align-items: center;
+      column-gap: var(--space-5);
+    }
+    /* Two raised bands near the head of each spine. */
+    .spine::before {
+      content: "";
+      position: absolute; left: 0.75rem; top: 0.5rem; bottom: 0.5rem; width: 7px;
+      border-left: 2px solid var(--color-gilt); border-right: 2px solid var(--color-gilt);
+      opacity: 0.45;
+    }
+    .spine--oxblood { --cloth: var(--cloth-oxblood); }
+    .spine--bottle { --cloth: var(--cloth-bottle); }
+    .spine--navy { --cloth: var(--cloth-navy); }
+    .spine--plum { --cloth: var(--cloth-plum); }
+    .spine--bronze { --cloth: var(--cloth-bronze); }
+    .spine--slate { --cloth: var(--cloth-slate); }
+
+    .spine-title {
+      margin: 0;
+      font-size: var(--size-spine-title);
+      font-stretch: var(--width-condensed);
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: 0.005em;
+      overflow-wrap: anywhere;
+    }
+    .spine-author { margin: 0.125rem 0 0; color: var(--color-gilt-muted); overflow-wrap: anywhere; }
+    .spine-status { margin: 0; white-space: nowrap; font-weight: 500; }
+    .spine-status--reading { font-weight: 750; }
+    .spine-actions { display: flex; gap: var(--space-1); margin-right: calc(-1 * var(--space-2)); }
+    .spine-action {
+      display: inline-flex; align-items: center;
+      min-height: var(--target-min);
+      padding: 0 var(--space-2);
+      border: 0; background: none;
+      color: var(--color-gilt);
+      font: 500 1rem/1.2 var(--font-body);
+      text-decoration: underline; text-underline-offset: 0.2em; text-decoration-thickness: 1px;
+      cursor: pointer;
+    }
+    .spine-action:focus-visible { outline-color: var(--color-gilt); }
+    /* A ribbon marker poking out of the books being read. */
+    .ribbon {
+      position: absolute; right: -2rem; top: calc(50% - 0.4375rem);
+      width: 2.25rem; height: 0.875rem;
+      background: var(--color-ribbon);
+      clip-path: polygon(0 0, 100% 0, 78% 50%, 100% 100%, 0 100%);
+    }
+
+    @media (max-width: 47.99rem) {
+      .spine {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas: "text text" "status actions";
+        padding: var(--space-3) var(--space-3) var(--space-1) 2rem;
+      }
+      .spine::before { left: 0.625rem; }
+      .spine-text { grid-area: text; }
+      .spine-status { grid-area: status; }
+      .spine-actions { grid-area: actions; }
+      .ribbon { right: -1.375rem; width: 1.625rem; top: 1.125rem; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to your library</a>
+  <div class="page">
+    <header>
+      <p class="wordmark">Shelf</p>
+    </header>
+
+    <main id="main">
+      <div class="top">
+        <div>
+          <h1>Your library</h1>
+          <p class="meta">12 books. Saved in this browser on this device.</p>
+        </div>
+        <a class="button" href="add-book.html">Add a book</a>
+      </div>
+
+      <ul class="stack" role="list">
+        <li class="spine spine--navy" style="--inset: 0px">
+          <div class="spine-text"><p class="spine-title">A Gentleman in Moscow</p><p class="spine-author">Amor Towles</p></div>
+          <p class="spine-status"><span class="vh">Status: </span>Finished</p>
+          <div class="spine-actions"><button class="spine-action" type="button">Edit<span class="vh"> A Gentleman in Moscow</span></button><button class="spine-action" type="button">Delete<span class="vh"> A Gentleman in Moscow</span></button></div>
+        </li>
+        <li class="spine spine--bronze" style="--inset: 64px">
+          <div class="spine-text"><p class="spine-title">Beowulf</p></div>
+          <p class="spine-status"><span class="vh">Status: </span>Want to read</p>
+          <div class="spine-actions"><button class="spine-action" type="button">Edit<span class="vh"> Beowulf</span></button><button class="spine-action" type="button">Delete<span class="vh"> Beowulf</span></button></div>
+        </li>
+        <li class="spine spine--oxblood" style="--inset: 40px">
+          <div class="spine-text"><p class="spine-title">Circe</p><p class="spine-author">Madeline Miller</p></div>
+          <p class="spine-status spine-status--reading"><span class="vh">Status: </span>Reading</p>
+          <div class="spine-actions"><button class="spine-action" type="button">Edit<span class="vh"> Circe</span></button><button class="spine-action" type="button">Delete<span class="vh"> Circe</span></button></div>
+          <span class="ribbon" aria-hidden="true"></span>
+        </li>
+        <li class="spine spine--slate" style="--inset: 72px">
+          <div class="spine-text"><p class="spine-title">Dune</p><p class="spine-author">Frank Herbert</p></div>
+          <p class="spine-status spine-status--reading"><span class="vh">Status: </span>Reading</p>
+          <div class="spine-actions"><button class="spine-action" type="button">Edit<span class="vh"> Dune</span></button><button class="spine-action" type="button">Delete<span class="vh"> Dune</span></button></div>
+          <span class="ribbon" aria-hidden="true"></span>
+        </li>
+        <li class="spine spine--bottle" style="--inset: 12px">
+          <div class="spine-text"><p class="spine-title">Educated</p><p class="spine-author">Tara Westover</p></div>
+          <p class="spine-status"><span class="vh">Status: </span>Finished</p>
+          <div class="spine-actions"><button class="spine-action" type="button">Edit<span class="vh"> Educated</span></button><button class="spine-action" type="button">Delete<span class="vh"> Educated</span></button></div>
+        </li>
+        <li class="spine spine--plum" style="--inset: 30px">
+          <div class="spine-text"><p class="spine-title">Klara and the Sun</p><p class="spine-author">Kazuo Ishiguro</p></div>
+          <p class="spine-status"><span class="vh">Status: </span>Want to read</p>
+          <div class="spine-actions"><button class="spine-action" type="button">Edit<span class="vh"> Klara and the Sun</span></button><button class="spine-action" type="button">Delete<span class="vh"> Klara and the Sun</span></button></div>
+        </li>
+        <li class="spine spine--navy" style="--inset: 52px">
+          <div class="spine-text"><p class="spine-title" lang="fr">Le Petit Prince</p><p class="spine-author">Antoine de Saint-Exupéry</p></div>
+          <p class="spine-status"><span class="vh">Status: </span>Finished</p>
+          <div class="spine-actions"><button class="spine-action" type="button">Edit<span class="vh"> Le Petit Prince</span></button><button class="spine-action" type="button">Delete<span class="vh"> Le Petit Prince</span></button></div>
+        </li>
+        <li class="spine spine--oxblood" style="--inset: 6px">
+          <div class="spine-text"><p class="spine-title">Piranesi</p><p class="spine-author">Susanna Clarke</p></div>
+          <p class="spine-status"><span class="vh">Status: </span>Finished</p>
+          <div class="spine-actions"><button class="spine-action" type="button">Edit<span class="vh"> Piranesi</span></button><button class="spine-action" type="button">Delete<span class="vh"> Piranesi</span></button></div>
+        </li>
+        <li class="spine spine--bottle" style="--inset: 36px">
+          <div class="spine-text"><p class="spine-title">The Hobbit</p><p class="spine-author">J. R. R. Tolkien</p></div>
+          <p class="spine-status"><span class="vh">Status: </span>Want to read</p>
+          <div class="spine-actions"><button class="spine-action" type="button">Edit<span class="vh"> The Hobbit</span></button><button class="spine-action" type="button">Delete<span class="vh"> The Hobbit</span></button></div>
+        </li>
+        <li class="spine spine--bronze" style="--inset: 0px">
+          <div class="spine-text"><p class="spine-title">The Hundred-Year-Old Man Who Climbed Out of the Window and Disappeared</p><p class="spine-author">Jonas Jonasson</p></div>
+          <p class="spine-status"><span class="vh">Status: </span>Want to read</p>
+          <div class="spine-actions"><button class="spine-action" type="button">Edit<span class="vh"> The Hundred-Year-Old Man Who Climbed Out of the Window and Disappeared</span></button><button class="spine-action" type="button">Delete<span class="vh"> The Hundred-Year-Old Man Who Climbed Out of the Window and Disappeared</span></button></div>
+        </li>
+        <li class="spine spine--plum" style="--inset: 58px">
+          <div class="spine-text"><p class="spine-title">The Left Hand of Darkness</p><p class="spine-author">Ursula K. Le Guin</p></div>
+          <p class="spine-status"><span class="vh">Status: </span>Want to read</p>
+          <div class="spine-actions"><button class="spine-action" type="button">Edit<span class="vh"> The Left Hand of Darkness</span></button><button class="spine-action" type="button">Delete<span class="vh"> The Left Hand of Darkness</span></button></div>
+        </li>
+        <li class="spine spine--slate" style="--inset: 24px">
+          <div class="spine-text"><p class="spine-title" lang="ru">Мастер и Маргарита</p><p class="spine-author" lang="ru">Михаил Булгаков</p></div>
+          <p class="spine-status"><span class="vh">Status: </span>Want to read</p>
+          <div class="spine-actions"><button class="spine-action" type="button">Edit<span class="vh"> <span lang="ru">Мастер и Маргарита</span></span></button><button class="spine-action" type="button">Delete<span class="vh"> <span lang="ru">Мастер и Маргарита</span></span></button></div>
+        </li>
+      </ul>
+    </main>
+  </div>
+</body>
+</html>

@@ -8,7 +8,7 @@
 |---|---|
 | Navigation model | None: a single flow. The header holds only the wordmark and "Add a book"; adding and editing open a page of their own. |
 | Layout structure | One column at a reading measure (about 40rem), with a hanging left margin that holds status notes and field errors. |
-| Information density | Spacious and editorial: about 6 books per desktop screen, 5 on a phone. |
+| Information density | Spacious and editorial: about 6 books per desktop screen, 4 on a phone. |
 | Typographic system | One family, Literata (a serif designed for long-form screen reading), perfect-fourth scale (1.333), low weight contrast, italic authors and notes. |
 | Composition | Asymmetric. The margin rule splits the page; notes hang right-aligned against it, titles start just after it. The eye lands on the first title. |
 | Interaction emphasis | Page to page. "Add a book" and "Edit" open a full page that reads like a new notebook entry; nothing overlays the list. |
@@ -83,4 +83,8 @@ Left-aligned text against the rule; margin notes right-aligned against it on des
 
 | Round | What I saw in the renders | What changed |
 |---|---|---|
-| 1 | *(filled in after the first render)* | |
+| 1 | Desktop: the margin notes, the wordmark and the Title error sat flush against the margin rule, and the italic "f" of "Shelf" touched it. | Widened the margin from 11rem to 12rem and gave margin content 1rem of space before the rule. |
+| 1 | Desktop: the status notes sat slightly above the title baseline, so note and title did not read as one line. | Entries align on their first baseline instead of a hand-tuned offset. |
+| 1 | Desktop add page: the three-line error in the margin stretched the Title field to 72px, taller than Author. | Field and error align to the top of their row; the field keeps its 48px height. |
+| 1 | Checked: 320px wide (no horizontal scrolling), both themes, 44px targets on every link and button (radio labels are 44px rows; the radio circle itself is 20px). | No change. |
+| — | Not visible in the renders: the focus ring on the Title field. The headless capture does not give the page focus, so `autofocus` draws nothing. The style is defined (3px accent outline) but not shown. | Phase 2 should capture focus states in the running app. |

@@ -8,7 +8,7 @@
 |---|---|
 | Navigation model | Split view. The stack stays on the left; add and edit open a docked panel on the right (desktop) or a bottom sheet (phone). |
 | Layout structure | A stack of full-width spines (a list), each slightly different in length, left edges aligned like books pushed against a wall. |
-| Information density | Balanced: about 9 books per desktop screen, 7 on a phone. |
+| Information density | Balanced: about 9 books per desktop screen, 6 on a phone. |
 | Typographic system | One family with width contrast: Archivo condensed and heavy for the wordmark, headings and spine titles, normal width for authors and controls. Major-third scale (1.25). |
 | Composition | Colour blocks of cloth spines carry the page; text sits in gilt on cloth. The eye lands on the stack, then the ribbons. |
 | Interaction emphasis | Master–detail. The panel or sheet slides over or beside the stack, so the reader keeps their place. |
@@ -83,4 +83,9 @@ phone: the stack fills the width; add/edit is a bottom sheet over a dimmed stack
 
 | Round | What I saw in the renders | What changed |
 |---|---|---|
-| 1 | *(filled in after the first render)* | |
+| 1 | The ribbon marker was a small flag high on the spine and read as a notification badge, not a bookmark. | The ribbon is longer (36px), centred on the spine's height, with a swallowtail end. |
+| 2 | Dark panel: the invalid Title field lost its error border, because a dark-theme field rule outranked the error rule. | Field borders are now a themed token, so the error border wins in both themes. |
+| 1 | Checked: 320px wide (no horizontal scrolling, ribbons stay inside the page gutter), both themes, 44px targets everywhere, gilt text on all six cloths. | No change. |
+| — | Kept on purpose: the page's "Add a book" button stays visible while the panel is open. Phase 2 decides whether it hides, or moves focus to the open panel. | Open for Phase 2. |
+| — | Archivo has no Cyrillic, so "Мастер и Маргарита" falls back to a system face (below the first screen in the renders). | Phase 2 must choose a fallback stack, or a family with wider script coverage. |
+| — | Not visible in the renders: the focus ring on the Title field (the headless capture does not give the page focus). | Phase 2 should capture focus states in the running app. |

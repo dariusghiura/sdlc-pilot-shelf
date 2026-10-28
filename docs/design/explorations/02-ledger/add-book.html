@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Add a book — Direction 02 Ledger</title>
+  <script>
+    // Theme hook used by capture-previews.mjs (?theme=light|dark); falls back to the OS preference.
+    const q = new URLSearchParams(location.search).get('theme');
+    document.documentElement.dataset.theme = q || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-surface: #FFFFFF;
+      --color-band: #EEF5EF;
+      --color-text: #1C2420;
+      --color-text-muted: #4D5A53;
+      --color-rule: #B8C7BD;
+      --color-rule-strong: #1C2420;
+      --color-accent: #1E6A49;
+      --color-on-accent: #FFFFFF;
+      --color-error: #B42318;
+      --color-field-border: #66766D;
+      --font-body: 'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+      --size-body: 1rem;
+      --size-wordmark: 1.25rem;
+      --size-heading: 1.5625rem;
+      --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem; --space-5: 1.5rem; --space-6: 2rem;
+      --gutter: 1rem;
+      --content-max: 72rem;
+      --toolbar-height: 4rem;
+      --row-min: 2.75rem;
+      --radius-control: 6px;
+      --target-min: 2.75rem;
+      --columns: minmax(0, 2.1fr) minmax(0, 1.3fr) 10.5rem 9rem;
+      color-scheme: light;
+    }
+    :root[data-theme="dark"] {
+      --color-surface: #121C17;
+      --color-band: #1A2A21;
+      --color-text: #E5EEE8;
+      --color-text-muted: #A6B8AD;
+      --color-rule: #3A4E42;
+      --color-rule-strong: #6F8579;
+      --color-accent: #9CCFB3;
+      --color-on-accent: #102018;
+      --color-error: #FF9C8F;
+      --color-field-border: #7F958A;
+      color-scheme: dark;
+    }
+    @media (min-width: 48rem) {
+      :root { --gutter: 2rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--color-surface);
+      color: var(--color-text);
+      font-family: var(--font-body);
+      font-size: var(--size-body);
+      line-height: 1.45;
+    }
+    .vh {
+      position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
+    :focus-visible { outline: 3px solid var(--color-accent); outline-offset: 2px; border-radius: 2px; }
+    .skip-link { position: absolute; left: var(--gutter); top: -4rem; z-index: 10; padding: var(--space-2) var(--space-4); background: var(--color-accent); color: var(--color-on-accent); }
+    .skip-link:focus { top: var(--space-2); }
+    .wrap { max-width: calc(var(--content-max) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+
+    /* Toolbar */
+    .toolbar {
+      position: sticky; top: 0; z-index: 2;
+      background: var(--color-surface);
+      border-bottom: 2px solid var(--color-rule-strong);
+    }
+    .toolbar .wrap {
+      display: flex; align-items: center; gap: var(--space-5);
+      min-height: var(--toolbar-height);
+    }
+    .wordmark { margin: 0; font-size: var(--size-wordmark); font-weight: 700; letter-spacing: 0.01em; }
+    .storage { margin: 0 0 0 auto; color: var(--color-text-muted); }
+    .button {
+      display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+      min-height: var(--target-min);
+      padding: 0 var(--space-4);
+      border: 2px solid var(--color-accent);
+      border-radius: var(--radius-control);
+      background: var(--color-accent);
+      color: var(--color-on-accent);
+      font: 700 1rem/1.2 var(--font-body);
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .button svg { width: 1rem; height: 1rem; }
+
+    /* Heading row */
+    .heading-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2) var(--space-4); padding-block: var(--space-5) var(--space-4); }
+    h1 { margin: 0; font-size: var(--size-heading); font-weight: 700; line-height: 1.2; }
+    .count { margin: 0; color: var(--color-text-muted); }
+    .storage--phone { display: none; }
+
+    /* Ledger */
+    .ledger { margin-bottom: var(--space-6); }
+    .row {
+      display: grid;
+      grid-template-columns: var(--columns);
+      column-gap: var(--space-4);
+      align-items: center;
+      min-height: var(--row-min);
+      padding: 0 var(--space-3);
+    }
+    .row--head {
+      position: sticky; top: calc(var(--toolbar-height) + 2px); z-index: 1;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-rule);
+      color: var(--color-text-muted);
+      min-height: 2.25rem;
+    }
+    .row--head [role="columnheader"] { font-weight: 400; }
+    .body-rows .row:nth-child(odd) { background: var(--color-band); }
+    .cell-title { font-weight: 700; overflow-wrap: anywhere; }
+    .cell-author { color: var(--color-text-muted); overflow-wrap: anywhere; }
+    .cell-status { display: flex; align-items: center; gap: var(--space-2); white-space: nowrap; }
+    .glyph { width: 0.875rem; height: 0.875rem; flex: none; }
+    .cell-actions { display: flex; justify-content: flex-end; gap: var(--space-1); }
+    .action {
+      display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1);
+      min-height: var(--target-min); min-width: var(--target-min);
+      padding: 0 var(--space-2);
+      border: 0; border-radius: var(--radius-control);
+      background: none;
+      color: var(--color-accent);
+      font: 400 1rem/1.2 var(--font-body);
+      text-decoration: underline; text-underline-offset: 0.2em;
+      cursor: pointer;
+    }
+    .action svg { display: none; width: 1.25rem; height: 1.25rem; }
+
+    /* Phone: two-line rows, icon actions. */
+    @media (max-width: 47.99rem) {
+      .toolbar .wrap { gap: var(--space-3); }
+      .toolbar .button { margin-left: auto; }
+      .storage--toolbar { display: none; }
+      .storage--phone { display: block; flex-basis: 100%; color: var(--color-text-muted); margin: 0; }
+      .row--head { display: none; }
+      .body-rows .row {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas: "title actions" "meta actions";
+        column-gap: var(--space-2);
+        row-gap: 0;
+        padding: var(--space-2) 0 var(--space-2) var(--space-3);
+      }
+      .cell-title { grid-area: title; }
+      .meta-line { grid-area: meta; display: grid; grid-template-columns: minmax(0, 1fr) 7.5rem; column-gap: var(--space-3); align-items: start; }
+      .meta-line .cell-status { grid-column: 2; }
+      .cell-actions { grid-area: actions; gap: 0; }
+      .action { padding: 0; text-decoration: none; }
+      .action .label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+      .action svg { display: block; }
+    }
+    /* Very narrow phones (320px): author and status stack. */
+    @media (max-width: 22.49rem) {
+      .meta-line { grid-template-columns: minmax(0, 1fr); }
+      .meta-line .cell-status { grid-column: 1; }
+    }
+    @media (min-width: 48rem) {
+      .meta-line { display: contents; }
+    }
+
+    /* The new row: the ledger opens a line at the top, in the same columns. */
+    .add-row {
+      margin: 0 0 var(--space-4);
+      padding: var(--space-3) var(--space-3) var(--space-4);
+      border: 2px solid var(--color-accent);
+      border-left-width: 6px;
+      border-radius: var(--radius-control);
+    }
+    .add-row h2 { margin: 0 0 var(--space-3); font-size: 1.125rem; font-weight: 700; }
+    .add-row .fields {
+      display: grid;
+      grid-template-columns: var(--columns);
+      column-gap: var(--space-4);
+      align-items: start;
+    }
+    .field label { display: block; margin-bottom: var(--space-1); font-weight: 700; }
+    .input, .select {
+      width: 100%;
+      min-height: var(--target-min);
+      padding: var(--space-2) var(--space-3);
+      border: 2px solid var(--color-field-border);
+      border-radius: var(--radius-control);
+      background: var(--color-surface);
+      color: var(--color-text);
+      font: 400 1rem/1.3 var(--font-body);
+    }
+    .input[aria-invalid="true"] { border-color: var(--color-error); border-width: 3px; }
+    .error {
+      display: flex; gap: var(--space-2); align-items: flex-start;
+      margin: var(--space-2) 0 0;
+      color: var(--color-error);
+      font-weight: 700;
+    }
+    .error svg { width: 1.125rem; height: 1.125rem; flex: none; margin-top: 0.1rem; }
+    .form-actions { display: flex; flex-direction: column; gap: var(--space-2); padding-top: 1.75rem; }
+    .button--quiet, .toolbar .button[aria-expanded="true"] { background: none; color: var(--color-accent); }
+    @media (max-width: 47.99rem) {
+      .add-row .fields { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-3); }
+      .form-actions { flex-direction: row; padding-top: var(--space-1); }
+    }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="g-want" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.75" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+      <symbol id="g-reading" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.75" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 1.25a5.75 5.75 0 0 0 0 11.5z" fill="currentColor"/></symbol>
+      <symbol id="g-finished" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6.75" fill="currentColor"/></symbol>
+      <symbol id="i-edit" viewBox="0 0 20 20"><path d="M13.6 3.2l3.2 3.2-9.5 9.5H4.1v-3.2z M11.8 5l3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+      <symbol id="i-delete" viewBox="0 0 20 20"><path d="M3.5 5.5h13 M8 5.5V3.5h4v2 M5.5 5.5l.8 11h7.4l.8-11 M8.5 8.5v5.5 M11.5 8.5v5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    </defs>
+  </svg>
+  <a class="skip-link" href="#main">Skip to your library</a>
+
+  <header class="toolbar">
+    <div class="wrap">
+      <p class="wordmark">Shelf</p>
+      <p class="storage storage--toolbar">Saved in this browser on this device.</p>
+      <button class="button" type="button" aria-expanded="true" aria-controls="add-row">Add a book</button>
+    </div>
+  </header>
+
+  <main id="main" class="wrap">
+    <div class="heading-row">
+      <h1 id="library-heading">Your library</h1>
+      <p class="count">12 books</p>
+      <p class="storage--phone">Saved in this browser on this device.</p>
+    </div>
+
+    <form class="add-row" id="add-row" action="library.html" novalidate aria-labelledby="add-heading">
+      <h2 id="add-heading">Add a book</h2>
+      <div class="fields">
+        <div class="field">
+          <label for="title">Title</label>
+          <input class="input" id="title" name="title" type="text" value="" maxlength="400" aria-invalid="true" aria-describedby="title-error" autofocus>
+          <p class="error" id="title-error"><svg aria-hidden="true" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="currentColor"/><path d="M9 4.5v5.5 M9 12.6v.4" stroke="var(--color-surface)" stroke-width="2" stroke-linecap="round"/></svg><span><span class="vh">Error: </span>Enter a title. A book can't be added without one.</span></p>
+        </div>
+        <div class="field">
+          <label for="author">Author (optional)</label>
+          <input class="input" id="author" name="author" type="text" value="Becky Chambers" maxlength="400">
+        </div>
+        <div class="field">
+          <label for="status">Reading status</label>
+          <select class="select" id="status" name="status">
+            <option>Want to read</option>
+            <option selected>Reading</option>
+            <option>Finished</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button class="button" type="submit">Add book</button>
+          <button class="button button--quiet" type="button">Cancel</button>
+        </div>
+      </div>
+    </form>
+
+    <div class="ledger" role="table" aria-labelledby="library-heading" aria-rowcount="13">
+      <div role="rowgroup">
+        <div class="row row--head" role="row">
+          <span role="columnheader">Title</span>
+          <span role="columnheader">Author</span>
+          <span role="columnheader">Status</span>
+          <span role="columnheader"><span class="vh">Actions</span></span>
+        </div>
+      </div>
+      <div class="body-rows" role="rowgroup">
+        <div class="row" role="row">
+          <span class="cell-title" role="cell">A Gentleman in Moscow</span>
+          <span class="meta-line"><span class="cell-author" role="cell">Amor Towles</span>
+          <span class="cell-status" role="cell"><svg class="glyph" aria-hidden="true"><use href="#g-finished"/></svg>Finished</span></span>
+          <span class="cell-actions" role="cell"><button class="action" type="button"><svg aria-hidden="true"><use href="#i-edit"/></svg><span class="label">Edit<span class="vh"> A Gentleman in Moscow</span></span></button><button class="action" type="button"><svg aria-hidden="true"><use href="#i-delete"/></svg><span class="label">Delete<span class="vh"> A Gentleman in Moscow</span></span></button></span>
+        </div>
+        <div class="row" role="row">
+          <span class="cell-title" role="cell">Beowulf</span>
+          <span class="meta-line"><span class="cell-author" role="cell"></span>
+          <span class="cell-status" role="cell"><svg class="glyph" aria-hidden="true"><use href="#g-want"/></svg>Want to read</span></span>
+          <span class="cell-actions" role="cell"><button class="action" type="button"><svg aria-hidden="true"><use href="#i-edit"/></svg><span class="label">Edit<span class="vh"> Beowulf</span></span></button><button class="action" type="button"><svg aria-hidden="true"><use href="#i-delete"/></svg><span class="label">Delete<span class="vh"> Beowulf</span></span></button></span>
+        </div>
+        <div class="row" role="row">
+          <span class="cell-title" role="cell">Circe</span>
+          <span class="meta-line"><span class="cell-author" role="cell">Madeline Miller</span>
+          <span class="cell-status" role="cell"><svg class="glyph" aria-hidden="true"><use href="#g-reading"/></svg>Reading</span></span>
+          <span class="cell-actions" role="cell"><button class="action" type="button"><svg aria-hidden="true"><use href="#i-edit"/></svg><span class="label">Edit<span class="vh"> Circe</span></span></button><button class="action" type="button"><svg aria-hidden="true"><use href="#i-delete"/></svg><span class="label">Delete<span class="vh"> Circe</span></span></button></span>
+        </div>
+        <div class="row" role="row">
+          <span class="cell-title" role="cell">Dune</span>
+          <span class="meta-line"><span class="cell-author" role="cell">Frank Herbert</span>
+          <span class="cell-status" role="cell"><svg class="glyph" aria-hidden="true"><use href="#g-reading"/></svg>Reading</span></span>
+          <span class="cell-actions" role="cell"><button class="action" type="button"><svg aria-hidden="true"><use href="#i-edit"/></svg><span class="label">Edit<span class="vh"> Dune</span></span></button><button class="action" type="button"><svg aria-hidden="true"><use href="#i-delete"/></svg><span class="label">Delete<span class="vh"> Dune</span></span></button></span>
+        </div>
+        <div class="row" role="row">
+          <span class="cell-title" role="cell">Educated</span>
+          <span class="meta-line"><span class="cell-author" role="cell">Tara Westover</span>
+          <span class="cell-status" role="cell"><svg class="glyph" aria-hidden="true"><use href="#g-finished"/></svg>Finished</span></span>
+          <span class="cell-actions" role="cell"><button class="action" type="button"><svg aria-hidden="true"><use href="#i-edit"/></svg><span class="label">Edit<span class="vh"> Educated</span></span></button><button class="action" type="button"><svg aria-hidden="true"><use href="#i-delete"/></svg><span class="label">Delete<span class="vh"> Educated</span></span></button></span>
+        </div>
+        <div class="row" role="row">
+          <span class="cell-title" role="cell">Klara and the Sun</span>
+          <span class="meta-line"><span class="cell-author" role="cell">Kazuo Ishiguro</span>
+          <span class="cell-status" role="cell"><svg class="glyph" aria-hidden="true"><use href="#g-want"/></svg>Want to read</span></span>
+          <span class="cell-actions" role="cell"><button class="action" type="button"><svg aria-hidden="true"><use href="#i-edit"/></svg><span class="label">Edit<span class="vh"> Klara and the Sun</span></span></button><button class="action" type="button"><svg aria-hidden="true"><use href="#i-delete"/></svg><span class="label">Delete<span class="vh"> Klara and the Sun</span></span></button></span>
+        </div>
+        <div class="row" role="row">
+          <span class="cell-title" role="cell" lang="fr">Le Petit Prince</span>
+          <span class="meta-line"><span class="cell-author" role="cell">Antoine de Saint-Exupéry</span>
+          <span class="cell-status" role="cell"><svg class="glyph" aria-hidden="true"><use href="#g-finished"/></svg>Finished</span></span>
+          <span class="cell-actions" role="cell"><button class="action" type="button"><svg aria-hidden="true"><use href="#i-edit"/></svg><span class="label">Edit<span class="vh"> Le Petit Prince</span></span></button><button class="action" type="button"><svg aria-hidden="true"><use href="#i-delete"/></svg><span class="label">Delete<span class="vh"> Le Petit Prince</span></span></button></span>
+        </div>
+        <div class="row" role="row">
+          <span class="cell-title" role="cell">Piranesi</span>
+          <span class="meta-line"><span class="cell-author" role="cell">Susanna Clarke</span>
+          <span class="cell-status" role="cell"><svg class="glyph" aria-hidden="true"><use href="#g-finished"/></svg>Finished</span></span>
+          <span class="cell-actions" role="cell"><button class="action" type="button"><svg aria-hidden="true"><use href="#i-edit"/></svg><span class="label">Edit<span class="vh"> Piranesi</span></span></button><button class="action" type="button"><svg aria-hidden="true"><use href="#i-delete"/></svg><span class="label">Delete<span class="vh"> Piranesi</span></span></button></span>
+        </div>
+        <div class="row" role="row">
+          <span class="cell-title" role="cell">The Hobbit</span>
+          <span class="meta-line"><span class="cell-author" role="cell">J. R. R. Tolkien</span>
+          <span class="cell-status" role="cell"><svg class="glyph" aria-hidden="true"><use href="#g-want"/></svg>Want to read</span></span>
+          <span class="cell-actions" role="cell"><button class="action" type="button"><svg aria-hidden="true"><use href="#i-edit"/></svg><span class="label">Edit<span class="vh"> The Hobbit</span></span></button><button class="action" type="button"><svg aria-hidden="true"><use href="#i-delete"/></svg><span class="label">Delete<span class="vh"> The Hobbit</span></span></button></span>
+        </div>
+        <div class="row" role="row">
+          <span class="cell-title" role="cell">The Hundred-Year-Old Man Who Climbed Out of the Window and Disappeared</span>
+          <span class="meta-line"><span class="cell-author" role="cell">Jonas Jonasson</span>
+          <span class="cell-status" role="cell"><svg class="glyph" aria-hidden="true"><use href="#g-want"/></svg>Want to read</span></span>
+          <span class="cell-actions" role="cell"><button class="action" type="button"><svg aria-hidden="true"><use href="#i-edit"/></svg><span class="label">Edit<span class="vh"> The Hundred-Year-Old Man Who Climbed Out of the Window and Disappeared</span></span></button><button class="action" type="button"><svg aria-hidden="true"><use href="#i-delete"/></svg><span class="label">Delete<span class="vh"> The Hundred-Year-Old Man Who Climbed Out of the Window and Disappeared</span></span></button></span>
+        </div>
+        <div class="row" role="row">
+          <span class="cell-title" role="cell">The Left Hand of Darkness</span>
+          <span class="meta-line"><span class="cell-author" role="cell">Ursula K. Le Guin</span>
+          <span class="cell-status" role="cell"><svg class="glyph" aria-hidden="true"><use href="#g-want"/></svg>Want to read</span></span>
+          <span class="cell-actions" role="cell"><button class="action" type="button"><svg aria-hidden="true"><use href="#i-edit"/></svg><span class="label">Edit<span class="vh"> The Left Hand of Darkness</span></span></button><button class="action" type="button"><svg aria-hidden="true"><use href="#i-delete"/></svg><span class="label">Delete<span class="vh"> The Left Hand of Darkness</span></span></button></span>
+        </div>
+        <div class="row" role="row">
+          <span class="cell-title" role="cell" lang="ru">Мастер и Маргарита</span>
+          <span class="meta-line"><span class="cell-author" role="cell" lang="ru">Михаил Булгаков</span>
+          <span class="cell-status" role="cell"><svg class="glyph" aria-hidden="true"><use href="#g-want"/></svg>Want to read</span></span>
+          <span class="cell-actions" role="cell"><button class="action" type="button"><svg aria-hidden="true"><use href="#i-edit"/></svg><span class="label">Edit<span class="vh"> <span lang="ru">Мастер и Маргарита</span></span></span></button><button class="action" type="button"><svg aria-hidden="true"><use href="#i-delete"/></svg><span class="label">Delete<span class="vh"> <span lang="ru">Мастер и Маргарита</span></span></span></button></span>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
