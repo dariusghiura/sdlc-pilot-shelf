@@ -5,8 +5,9 @@
 //   - writing approval metadata (status: approved, approved_by, approved_on) into docs/
 //   - editing an approved document without reopening it (status back to draft) in the same edit
 //   - modifying guardrails: .claude/settings*.json, .claude/hooks/, .sdlc/
+// It asks the human to confirm commands that legitimately bypass these checks (the kit bootstrap/sync).
 // It is a safety net, not a sandbox: commands phrased differently can slip past (see docs/workflow/architecture.md).
-// Input: hook JSON on stdin. Output: a PreToolUse "deny" decision on stdout, or nothing (normal permission flow).
+// Input: hook JSON on stdin. Output: a PreToolUse "deny" or "ask" decision on stdout, or nothing (normal flow).
 import { readFileSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { relative, resolve, isAbsolute } from 'node:path';
@@ -16,7 +17,18 @@ const PROTECTED_RE = /^(\.claude\/settings(\.local)?\.json|\.claude\/hooks\/.+|\
 const PROTECTED_IN_CMD = /(^|[\s"'=/])\.?\/?(\.claude\/settings(\.local)?\.json|\.claude\/hooks\/\S*|\.sdlc\/\S*)/;
 const APPROVAL_LINE = /^\s*(status\s*:\s*["']?approved\b|approved_(by|on)\s*:\s*["']?[^\s"'#])|"status"\s*:\s*"approved"|"approved_(by|on)"\s*:\s*"[^"\s]/;
 const APPROVAL_IN_CMD = /status["']?\s*:\s*["']?approved\b|approved_(by|on)["']?\s*:\s*["']?[^\s"'#]/;
-const WRITE_IN_CMD = /\bsed\s[^;&|\n]*-i|\bperl\s+-\w*i|>{1,2}\s*[^\s&>]|\btee\b|Set-Content|Add-Content|Out-File|writeFile|write_text|\.write\(/;
+const IN_PLACE_WRITE = /\bsed\s[^;&|\n]*-i|\bperl\s+-\w*i|Set-Content|Add-Content|Out-File|writeFile|write_text|\.write\(/;
+const DOC_PATH_IN_CMD = /(^|[\s"'=(:])(\.\/)?docs\/\S|tokens\.json/;
+const isDocPath = (p) => /^(\.\/)?docs\//.test(p.replace(/\\/g, '/')) || /tokens\.json$/.test(p);
+
+// True when the command writes into docs/ (or tokens.json): redirection or tee into such a path, or an
+// in-place/programmatic write in a command that names one. Text that merely mentions approval fields,
+// such as a PR or issue body, or a heredoc into a scratch file, is not a write into the docs.
+function writesToDocs(cmd) {
+  for (const m of cmd.matchAll(/(?<![-=])>{1,2}\s*["']?([^\s"'&;|>]+)/g)) if (isDocPath(m[1])) return true;
+  for (const m of cmd.matchAll(/\btee\s+(?:-\w+\s+)*["']?([^\s"'&;|]+)/g)) if (isDocPath(m[1])) return true;
+  return IN_PLACE_WRITE.test(cmd) && DOC_PATH_IN_CMD.test(cmd);
+}
 const REOPEN_STATUS = /status["']?\s*:\s*["']?(draft|in-review|superseded)\b/;
 const APPROVED_STATUS = /status["']?\s*:\s*["']?approved\b/;
 
@@ -33,6 +45,26 @@ function deny(reasons) {
     }),
   );
   process.exit(0);
+}
+
+function ask(reasons) {
+  process.stdout.write(
+    JSON.stringify({
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        permissionDecision: 'ask',
+        permissionDecisionReason: `SDLC guard: confirm ${reasons.join('; ')}.`,
+      },
+    }),
+  );
+  process.exit(0);
+}
+
+// Commands that are legitimate but bypass the per-file guard, so the human confirms each run.
+function commandAsks(raw) {
+  const out = [];
+  if (/bootstrap-project\.mjs\b/.test(raw)) out.push('running the kit bootstrap/sync, which rewrites guardrail files in .claude/ and .sdlc/');
+  return out;
 }
 
 function currentBranch(cwd) {
@@ -74,9 +106,7 @@ function commandProblems(raw, cwd) {
   }
   if (/\bgit(\s+-[cC]\s+\S+)*\s+commit\b/.test(cmd) && onMain()) out.push('committing directly on main/master (create a branch first)');
 
-  if (APPROVAL_IN_CMD.test(cmd) && WRITE_IN_CMD.test(cmd) && /docs\/|\.md\b|tokens\.json/.test(cmd)) {
-    out.push('writing approval metadata into documents');
-  }
+  if (APPROVAL_IN_CMD.test(cmd) && writesToDocs(cmd)) out.push('writing approval metadata into documents');
 
   for (const seg of cmd.split(/&&|\|\||[;|\n]/)) {
     const t = seg.trim().split(/\s+/).map(unquote);
@@ -157,7 +187,11 @@ const ti = input.tool_input ?? {};
 const projectDir = process.env.CLAUDE_PROJECT_DIR || input.cwd || process.cwd();
 
 let problems = [];
-if (tool === 'Bash' || tool === 'PowerShell') problems = commandProblems(String(ti.command ?? ''), input.cwd || projectDir);
-else if (['Edit', 'Write', 'MultiEdit', 'NotebookEdit'].includes(tool)) problems = fileProblems(tool, ti, projectDir);
+let asks = [];
+if (tool === 'Bash' || tool === 'PowerShell') {
+  problems = commandProblems(String(ti.command ?? ''), input.cwd || projectDir);
+  asks = commandAsks(String(ti.command ?? ''));
+} else if (['Edit', 'Write', 'MultiEdit', 'NotebookEdit'].includes(tool)) problems = fileProblems(tool, ti, projectDir);
 if (problems.length) deny(problems.map((p) => `blocked ${p}`));
+if (asks.length) ask(asks);
 process.exit(0);
