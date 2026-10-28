@@ -21,7 +21,9 @@
       "Edit(/.claude/settings.json)",
       "Edit(/.claude/settings.local.json)",
       "Edit(/.claude/hooks/**)",
-      "Edit(/.sdlc/**)"
+      "Edit(/.sdlc/scripts/**)",
+      "Edit(/.sdlc/KIT_VERSION)",
+      "Edit(/.sdlc/kit-manifest.json)"
     ],
     "ask": [
       "Bash(git reset --hard*)",
