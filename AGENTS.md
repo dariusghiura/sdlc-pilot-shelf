@@ -45,6 +45,12 @@ Each gate document has front matter (`id`, `status`, `version`, `based_on`, `app
 - `based_on` records the upstream versions a document was written against. Keep it accurate.
 - Templates live in `.sdlc/templates/`. Copy one when a stage starts. Never create empty placeholder documents.
 
+**Spec PRs: how documents reach approval.** `main` only accepts pull requests with a green `docs-check`.
+1. The agent works on a branch named `spec/<doc-id>-v<version>` (e.g. `spec/prd-v1.0.0`). The document has `status: in-review`, and `validate-docs` must be clean.
+2. The agent pushes and opens a PR titled `spec: <DOC-ID> v<version>`, then stops.
+3. The human reviews. To approve, the human sets `status: approved`, `approved_by` and `approved_on` on that branch, in the GitHub editor or locally, and merges once `docs-check` passes.
+4. The next stage starts from an up-to-date `main` (`git switch main && git pull --ff-only`).
+
 ## 4. Implementing an issue
 
 1. Work on exactly one issue labelled `ready` whose gate passes. Use a short-lived branch `issue-<number>-<slug>` from an up-to-date `main`.
