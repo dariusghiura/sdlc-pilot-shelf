@@ -1,11 +1,11 @@
 ---
 id: UI-SPEC
 title: Shelf — UI Specification (Phase 2)
-status: in-review
+status: approved
+approved_by: dariusghiura
+approved_on: 2026-10-29
 version: 1.0.0
 based_on: { PRD: 1.0.0, DESIGN-BRIEF: 1.0.0 }
-approved_by:
-approved_on:
 ---
 
 # Shelf — UI Specification (Phase 2: implementation contract)
