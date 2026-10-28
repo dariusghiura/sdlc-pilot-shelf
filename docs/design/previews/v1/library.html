@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Library — Direction 01 Margin notes</title>
+  <script>
+    // Theme hook used by capture-previews.mjs (?theme=light|dark); falls back to the OS preference.
+    const q = new URLSearchParams(location.search).get('theme');
+    document.documentElement.dataset.theme = q || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-surface: #F5F7F4;
+      --color-text: #1B2140;
+      --color-text-muted: #545B6E;
+      --color-accent: #2A47A6;
+      --color-on-accent: #FFFFFF;
+      --color-margin-rule: #E39AAE;
+      --color-error: #A1203A;
+      --font-body: 'Literata', Georgia, 'Times New Roman', serif;
+      --size-note: 1rem;
+      --size-author: 1.125rem;
+      --size-title: 1.375rem;
+      --size-heading: 2.125rem;
+      --size-wordmark: 1.375rem;
+      --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem;
+      --space-5: 1.25rem; --space-6: 2rem; --space-7: 3rem;
+      --gutter: 1rem;
+      --margin-width: 1.25rem;
+      --margin-gap: 1.25rem;
+      --measure: 40rem;
+      --radius-control: 3px;
+      --target-min: 2.75rem;
+      color-scheme: light;
+    }
+    :root[data-theme="dark"] {
+      --color-surface: #141A2C;
+      --color-text: #E7E9F1;
+      --color-text-muted: #A9AFC3;
+      --color-accent: #A8B9FF;
+      --color-on-accent: #141A2C;
+      --color-margin-rule: #8E4A61;
+      --color-error: #FF9DB0;
+      color-scheme: dark;
+    }
+    @media (min-width: 48rem) {
+      :root {
+        --size-title: 1.75rem;
+        --size-heading: 2.75rem;
+        --size-wordmark: 1.5rem;
+        --gutter: 2rem;
+        --margin-width: 12rem;
+        --margin-gap: 1.75rem;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--color-surface);
+      color: var(--color-text);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.5;
+      font-optical-sizing: auto;
+    }
+    .vh {
+      position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
+    :focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; border-radius: 2px; }
+    .skip-link { position: absolute; left: var(--gutter); top: -4rem; padding: var(--space-2) var(--space-4); background: var(--color-accent); color: var(--color-on-accent); }
+    .skip-link:focus { top: var(--space-2); }
+
+    /* The sheet: one page with a single margin rule running its full height. */
+    .sheet {
+      min-height: 100vh;
+      max-width: calc(var(--margin-width) + var(--margin-gap) + var(--measure) + 2 * var(--gutter));
+      margin: 0 auto;
+      padding: 0 var(--gutter) var(--space-7);
+      background: linear-gradient(var(--color-margin-rule), var(--color-margin-rule)) no-repeat;
+      background-size: 2px 100%;
+      background-position: calc(var(--gutter) + var(--margin-width)) 0;
+    }
+    .lined {
+      display: grid;
+      grid-template-columns: var(--margin-width) minmax(0, 1fr);
+      column-gap: var(--margin-gap);
+    }
+    .lined > * { grid-column: 2; }
+
+    .masthead { padding-block: var(--space-5); align-items: center; }
+    .wordmark {
+      margin: 0;
+      font-size: var(--size-wordmark);
+      font-style: italic;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+    .button {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: var(--target-min);
+      padding: 0 var(--space-5);
+      border: 2px solid var(--color-accent);
+      border-radius: var(--radius-control);
+      background: var(--color-accent);
+      color: var(--color-on-accent);
+      font: 600 1rem/1.2 var(--font-body);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .intro { padding-block: var(--space-6) var(--space-6); }
+    h1 {
+      margin: 0;
+      font-size: var(--size-heading);
+      font-weight: 450;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+    .meta { margin: var(--space-3) 0 0; color: var(--color-text-muted); }
+
+    .entries { list-style: none; margin: 0; padding: 0; }
+    .entry { padding-block: var(--space-4); }
+    .note {
+      margin: 0;
+      font-size: var(--size-note);
+      font-style: italic;
+      color: var(--color-text-muted);
+      line-height: 1.4;
+    }
+    .note--reading { color: var(--color-text); font-weight: 650; }
+    .title {
+      margin: 0;
+      font-size: var(--size-title);
+      font-weight: 500;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+    .byline {
+      display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between;
+      column-gap: var(--space-5);
+    }
+    .author {
+      margin: var(--space-1) 0 0;
+      font-size: var(--size-author);
+      font-style: italic;
+      color: var(--color-text-muted);
+      overflow-wrap: anywhere;
+    }
+    .actions { display: flex; gap: var(--space-2); margin-left: calc(-1 * var(--space-3)); }
+    .link-button {
+      display: inline-flex; align-items: center;
+      min-height: var(--target-min);
+      padding: 0 var(--space-3);
+      border: 0; background: none;
+      color: var(--color-accent);
+      font: 500 1rem/1.2 var(--font-body);
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.2em;
+      cursor: pointer;
+    }
+
+    /* Phone: the margin shrinks to a strip, so notes move above the title. */
+    @media (max-width: 47.99rem) {
+      .masthead {
+        display: flex; justify-content: space-between; gap: var(--space-4);
+        padding-left: calc(var(--margin-width) + var(--margin-gap));
+      }
+      .entry { padding-block: var(--space-4) var(--space-3); }
+      .entry .note { margin-bottom: var(--space-1); }
+      .byline { display: block; }
+    }
+    /* Desktop: notes hang in the margin, right-aligned against the rule. */
+    @media (min-width: 48rem) {
+      .entry { padding-block: var(--space-5); }
+      .lined > .margin { grid-column: 1; padding-right: var(--space-4); }
+      .entry { align-items: baseline; }
+      .entry > .note { grid-row: 1; text-align: right; }
+      .entry > .body { grid-row: 1; }
+      .masthead .wordmark { grid-column: 1; text-align: right; }
+      .masthead .button { grid-column: 2; justify-self: end; }
+      .actions { margin-left: 0; margin-right: calc(-1 * var(--space-3)); }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to your library</a>
+  <div class="sheet">
+    <header class="masthead lined">
+      <p class="wordmark margin">Shelf</p>
+      <a class="button" href="add-book.html">Add a book</a>
+    </header>
+
+    <main id="main">
+      <div class="intro lined">
+        <h1>Your library</h1>
+        <p class="meta">12 books. Saved in this browser on this device.</p>
+      </div>
+
+      <ul class="entries" role="list">
+        <li class="entry lined">
+          <p class="note margin"><span class="vh">Status: </span>Finished</p>
+          <div class="body">
+            <p class="title">A Gentleman in Moscow</p>
+            <div class="byline">
+              <p class="author">Amor Towles</p>
+              <div class="actions"><a class="link-button" href="add-book.html">Edit<span class="vh"> A Gentleman in Moscow</span></a><button class="link-button" type="button">Delete<span class="vh"> A Gentleman in Moscow</span></button></div>
+            </div>
+          </div>
+        </li>
+        <li class="entry lined">
+          <p class="note margin"><span class="vh">Status: </span>Want to read</p>
+          <div class="body">
+            <p class="title">Beowulf</p>
+            <div class="byline">
+              <p class="author"></p>
+              <div class="actions"><a class="link-button" href="add-book.html">Edit<span class="vh"> Beowulf</span></a><button class="link-button" type="button">Delete<span class="vh"> Beowulf</span></button></div>
+            </div>
+          </div>
+        </li>
+        <li class="entry lined">
+          <p class="note note--reading margin"><span class="vh">Status: </span>Reading</p>
+          <div class="body">
+            <p class="title">Circe</p>
+            <div class="byline">
+              <p class="author">Madeline Miller</p>
+              <div class="actions"><a class="link-button" href="add-book.html">Edit<span class="vh"> Circe</span></a><button class="link-button" type="button">Delete<span class="vh"> Circe</span></button></div>
+            </div>
+          </div>
+        </li>
+        <li class="entry lined">
+          <p class="note note--reading margin"><span class="vh">Status: </span>Reading</p>
+          <div class="body">
+            <p class="title">Dune</p>
+            <div class="byline">
+              <p class="author">Frank Herbert</p>
+              <div class="actions"><a class="link-button" href="add-book.html">Edit<span class="vh"> Dune</span></a><button class="link-button" type="button">Delete<span class="vh"> Dune</span></button></div>
+            </div>
+          </div>
+        </li>
+        <li class="entry lined">
+          <p class="note margin"><span class="vh">Status: </span>Finished</p>
+          <div class="body">
+            <p class="title">Educated</p>
+            <div class="byline">
+              <p class="author">Tara Westover</p>
+              <div class="actions"><a class="link-button" href="add-book.html">Edit<span class="vh"> Educated</span></a><button class="link-button" type="button">Delete<span class="vh"> Educated</span></button></div>
+            </div>
+          </div>
+        </li>
+        <li class="entry lined">
+          <p class="note margin"><span class="vh">Status: </span>Want to read</p>
+          <div class="body">
+            <p class="title">Klara and the Sun</p>
+            <div class="byline">
+              <p class="author">Kazuo Ishiguro</p>
+              <div class="actions"><a class="link-button" href="add-book.html">Edit<span class="vh"> Klara and the Sun</span></a><button class="link-button" type="button">Delete<span class="vh"> Klara and the Sun</span></button></div>
+            </div>
+          </div>
+        </li>
+        <li class="entry lined">
+          <p class="note margin"><span class="vh">Status: </span>Finished</p>
+          <div class="body">
+            <p class="title" lang="fr">Le Petit Prince</p>
+            <div class="byline">
+              <p class="author">Antoine de Saint-Exupéry</p>
+              <div class="actions"><a class="link-button" href="add-book.html">Edit<span class="vh"> Le Petit Prince</span></a><button class="link-button" type="button">Delete<span class="vh"> Le Petit Prince</span></button></div>
+            </div>
+          </div>
+        </li>
+        <li class="entry lined">
+          <p class="note margin"><span class="vh">Status: </span>Finished</p>
+          <div class="body">
+            <p class="title">Piranesi</p>
+            <div class="byline">
+              <p class="author">Susanna Clarke</p>
+              <div class="actions"><a class="link-button" href="add-book.html">Edit<span class="vh"> Piranesi</span></a><button class="link-button" type="button">Delete<span class="vh"> Piranesi</span></button></div>
+            </div>
+          </div>
+        </li>
+        <li class="entry lined">
+          <p class="note margin"><span class="vh">Status: </span>Want to read</p>
+          <div class="body">
+            <p class="title">The Hobbit</p>
+            <div class="byline">
+              <p class="author">J. R. R. Tolkien</p>
+              <div class="actions"><a class="link-button" href="add-book.html">Edit<span class="vh"> The Hobbit</span></a><button class="link-button" type="button">Delete<span class="vh"> The Hobbit</span></button></div>
+            </div>
+          </div>
+        </li>
+        <li class="entry lined">
+          <p class="note margin"><span class="vh">Status: </span>Want to read</p>
+          <div class="body">
+            <p class="title">The Hundred-Year-Old Man Who Climbed Out of the Window and Disappeared</p>
+            <div class="byline">
+              <p class="author">Jonas Jonasson</p>
+              <div class="actions"><a class="link-button" href="add-book.html">Edit<span class="vh"> The Hundred-Year-Old Man Who Climbed Out of the Window and Disappeared</span></a><button class="link-button" type="button">Delete<span class="vh"> The Hundred-Year-Old Man Who Climbed Out of the Window and Disappeared</span></button></div>
+            </div>
+          </div>
+        </li>
+        <li class="entry lined">
+          <p class="note margin"><span class="vh">Status: </span>Want to read</p>
+          <div class="body">
+            <p class="title">The Left Hand of Darkness</p>
+            <div class="byline">
+              <p class="author">Ursula K. Le Guin</p>
+              <div class="actions"><a class="link-button" href="add-book.html">Edit<span class="vh"> The Left Hand of Darkness</span></a><button class="link-button" type="button">Delete<span class="vh"> The Left Hand of Darkness</span></button></div>
+            </div>
+          </div>
+        </li>
+        <li class="entry lined">
+          <p class="note margin"><span class="vh">Status: </span>Want to read</p>
+          <div class="body">
+            <p class="title" lang="ru">Мастер и Маргарита</p>
+            <div class="byline">
+              <p class="author" lang="ru">Михаил Булгаков</p>
+              <div class="actions"><a class="link-button" href="add-book.html">Edit<span class="vh"> <span lang="ru">Мастер и Маргарита</span></span></a><button class="link-button" type="button">Delete<span class="vh"> <span lang="ru">Мастер и Маргарита</span></span></button></div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </main>
+  </div>
+</body>
+</html>
