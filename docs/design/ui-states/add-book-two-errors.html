@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Add a book — Shelf</title>
+  <script>
+    // Theme hook used by capture-previews.mjs (?theme=light|dark); falls back to the OS preference.
+    const q = new URLSearchParams(location.search).get('theme');
+    document.documentElement.dataset.theme = q || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  </script>
+  <!-- Reference prototype only: the product self-hosts Literata (NFR-004). -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shelf.css">
+</head>
+<body>
+  <!-- UX-003 (add form) after a save with an empty Title (FR-003 AC-4) and an Author over 200 characters
+       (FR-003 AC-5): both errors, each beside its own field. Status left at the default, Want to read.
+       The radio buttons are drawn as UX-106 specifies. -->
+  <a class="skip-link" href="#main">Skip to the form</a>
+  <div class="sheet">
+    <header class="masthead lined">
+      <p class="wordmark margin"><a href="#library">Shelf</a></p>
+    </header>
+
+    <main id="main">
+      <form action="#library" method="post" novalidate aria-labelledby="form-heading">
+        <div class="intro intro--form lined">
+          <h1 id="form-heading" tabindex="-1">Add a book</h1>
+        </div>
+
+        <div class="field lined">
+          <label class="label" for="title">Title</label>
+          <p class="error margin" id="title-error"><span class="vh">Error: </span>Enter a title. A book can't be added without one.</p>
+          <input class="input" id="title" name="title" type="text" value="" required autocomplete="off" aria-invalid="true" aria-describedby="title-error">
+        </div>
+
+        <div class="field lined">
+          <label class="label" for="author">Author (optional)</label>
+          <p class="error margin" id="author-error"><span class="vh">Error: </span>Author must be 200 characters or fewer.</p>
+          <input class="input" id="author" name="author" type="text" value="Terry Pratchett and Neil Gaiman, with notes from the editors of the anniversary edition, the original cover artist, the translators of the French, German, Italian and Spanish editions, and the narrator of the audiobook" autocomplete="off" aria-invalid="true" aria-describedby="author-error">
+        </div>
+
+        <div class="field lined">
+          <fieldset>
+            <legend>Reading status</legend>
+            <div class="choices">
+              <label class="choice"><input type="radio" name="status" value="want-to-read" checked> Want to read</label>
+              <label class="choice"><input type="radio" name="status" value="reading"> Reading</label>
+              <label class="choice"><input type="radio" name="status" value="finished"> Finished</label>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="actions-row lined">
+          <div class="form-actions">
+            <button class="button" type="submit">Add book</button>
+            <a class="link-button" href="#library">Cancel</a>
+          </div>
+        </div>
+      </form>
+    </main>
+  </div>
+</body>
+</html>

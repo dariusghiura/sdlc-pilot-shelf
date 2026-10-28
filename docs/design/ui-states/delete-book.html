@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Delete “Dune”? — Shelf</title>
+  <script>
+    // Theme hook used by capture-previews.mjs (?theme=light|dark); falls back to the OS preference.
+    const q = new URLSearchParams(location.search).get('theme');
+    document.documentElement.dataset.theme = q || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  </script>
+  <!-- Reference prototype only: the product self-hosts Literata (NFR-004). -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shelf.css">
+</head>
+<body>
+  <!-- UX-005: the delete confirmation (FR-005), a page of its own in the same style as the form. -->
+  <a class="skip-link" href="#main">Skip to the confirmation</a>
+  <div class="sheet">
+    <header class="masthead lined">
+      <p class="wordmark margin"><a href="#library">Shelf</a></p>
+    </header>
+
+    <main id="main">
+      <form action="#library" method="post" aria-labelledby="confirm-heading">
+        <div class="intro lined">
+          <h1 id="confirm-heading" tabindex="-1">Delete “Dune”?</h1>
+          <p class="meta">It will be removed from your library. This can't be undone.</p>
+        </div>
+        <div class="lined">
+          <div class="form-actions">
+            <button class="button" type="submit">Delete book</button>
+            <a class="link-button" href="#library">Cancel</a>
+          </div>
+        </div>
+      </form>
+    </main>
+  </div>
+</body>
+</html>
