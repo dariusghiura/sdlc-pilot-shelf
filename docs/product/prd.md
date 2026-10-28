@@ -1,11 +1,11 @@
 ---
 id: PRD
 title: Shelf — Product Requirements
-status: in-review        # draft | in-review | approved | superseded  (only the human sets approved)
+status: approved
 version: 1.0.0
 based_on: {}
-approved_by:
-approved_on:
+approved_by: dariusghiura
+approved_on: 2026-10-28
 ---
 
 # Shelf — Product Requirements
