@@ -22,3 +22,4 @@ Each stage starts only when the human types its command. Skills check their own 
 - If the guard hook or a permission rule blocks an action, tell the human what was blocked and why. Don't retry another way.
 - For UI work, check rendered output (the built-in browser or `.sdlc/scripts/capture-previews.mjs`) against the approved previews and UI spec before opening a PR.
 - Never use `pr-reviewer` to review code written in the same session.
+- A kit sync (`bootstrap-project.mjs`) rewrites `.claude/` and `.sdlc/`, so the guard asks the human to confirm it. After a sync changes `.sdlc/KIT_VERSION`, start a fresh session so the updated instructions and skills load.

@@ -1,13 +1,13 @@
 {
-  "kit_version": "0.1.0",
-  "kit_commit": "cf90e0d",
-  "installed_at": "2026-10-28T17:39:47.677Z",
+  "kit_version": "0.1.2",
+  "kit_commit": "acb32eb",
+  "installed_at": "2026-10-28T17:55:02.128Z",
   "files": {
     ".claude/agents/pr-reviewer.md": "f61ba2b3e257c0a1ee81a71815013db6f256c9de1fd5d5996a6ed10b2ced4c2d",
-    ".claude/hooks/guard.mjs": "0a1d83f49a94a644b5aae051fefd859f2823d2ebb43bb96e7693b9688caa30c6",
+    ".claude/hooks/guard.mjs": "29c75cd5ac8e0699c2f03ae45fae8f2da6852afdf2b7315ecca9ce072132349e",
     ".claude/hooks/reviewer-readonly.mjs": "042b6e45fc38aaa0773cab02542801ae449434f7bc001a98e6532f29f9effb14",
     ".claude/settings.json": "c777f4536de41227a2597fc251ee1d28f94a7191f77e691ebba807480e34f48b",
-    ".claude/skills/explore-design/SKILL.md": "daa8376dd2dc440d4f65170bbb17af5a609ae199c49beaa60ff7af553b735229",
+    ".claude/skills/explore-design/SKILL.md": "e8aa0ac6b66ad60a63a151e3c8673309255b6ab58521f966f6ad250db782c199",
     ".claude/skills/explore-design/references/LICENSE-frontend-design.txt": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
     ".claude/skills/explore-design/references/PROVENANCE.md": "a78f024eaf3907be83630623aa4bf55a0c1b29d170ae5b216c1c541934b4ff7d",
     ".claude/skills/explore-design/references/frontend-design.md": "6a79024776b961ef7bf1d7c41fd2054134473a36d4ca07ff18fc99357cc2b6ca",
@@ -22,7 +22,7 @@
     ".github/PULL_REQUEST_TEMPLATE.md": "71cacc9fc6ae8b48a5d63c7953c3521fad77a87dd779b2c971b542616a64f6ca",
     ".github/workflows/docs-check.yml": "0106e9476fd4577c65176a8e675f6693c1ffcb5bb6581816b0964e5f16eeeb10",
     ".gitignore": "86a3729d339bf89c9f55c34a67401fad802c31482d5c776f188d2fa211a287f1",
-    ".sdlc/KIT_VERSION": "e9dd8507f4bf0c6f42458e41aea833ad0bd3f6127272335eee9bf4d58541ed67",
+    ".sdlc/KIT_VERSION": "297b50f08386d3521f8fdaf2f78eb8d9d0acdf452d2e61596905fba37208c792",
     ".sdlc/scripts/capture-previews.mjs": "046408d9801e1e2d5c89011b632b07a79a99a7dc324490697d12cb74b73f0fde",
     ".sdlc/scripts/gate.mjs": "3b3de4adfb313bb3bc6dc6519e1b58427e5ff1078ba271880aeca8036c8b5e9f",
     ".sdlc/scripts/lib/docs.mjs": "7e45ed1a932b0413f26cb66138c7df7df1053f2a5d17f1c03433492a64fee2b0",
@@ -36,7 +36,7 @@
     ".sdlc/templates/prd.md": "18d2ea90f3688c9bd329d57693b5ebe2f835746fc1760f2eb0945a22262a1721",
     ".sdlc/templates/tokens.json": "90a0a39ce2b9584b060257d18a0076b0f1c64dc9a9bd94925e502037dcb2337c",
     ".sdlc/templates/ui-spec.md": "37dc81369b40252054c38595233ea60d64d84c61425ebbea95269f9043fddf55",
-    "AGENTS.md": "4c360e27873ab1ce5c74733ad1231bcfdcf2d21f60e000ebc2b0aeef17872920",
-    "CLAUDE.md": "c1173c8094a36a497318a9790e86dc361bd628aa793baab04c27995aba354ea4"
+    "AGENTS.md": "298472bc88abe47aefc6e7748f89e04f190b236c2e2328867c6032b5b9dbd92e",
+    "CLAUDE.md": "efbeb8de04f409527c10af1963898d629c5a3c769ffe8ee10871cfce008b0c9b"
   }
 }

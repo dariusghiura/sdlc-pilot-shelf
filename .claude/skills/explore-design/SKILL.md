@@ -25,6 +25,7 @@ Read these before doing anything else:
 
 ## Mode `explore` (default)
 
+0. **Branch.** All Phase 1 work, including explorations, refinements and the brief, lives on one spec branch. If you are on `main`, run `git switch -c spec/design-brief-v1.0.0` (or the next version when reopening). Commit as you go.
 1. **Clarify only what changes the outcome.** Visual personality, information density, platforms (is mobile in scope?), brand constraints, accessibility needs beyond the PRD, and themes (light only, or light and dark). Skip anything the PRD already answers. Ask at most five questions in one message, each with a proposed default, and wait for the answers.
 2. **Pick two representative screens.** Choose the screen for the primary job plus one that stresses input, density or state. Name them, cite their FR IDs, and say why they represent the product. Write the shared content to `docs/design/explorations/content.md`.
 3. **Define three directions.** For each, give a name, a one-line concept, and where it sits on every axis of the distinctness table. Fill in the pairwise comparison. If any pair differs on fewer than three axes, replace a direction before building. Write each `direction.md`.
@@ -65,7 +66,8 @@ The owner's choice is the argument. Don't proceed on your own preference.
 
    Leave `approved_by` and `approved_on` empty.
 4. Run `node .sdlc/scripts/validate-docs.mjs` and fix every error you introduced.
-5. **STOP.** Summarise the brief, list the preview files, and ask the owner to review the brief **and** the previews. To approve, the owner sets `status: approved`, `approved_by` and `approved_on` themselves. Agents can't. Phase 2 (`ui-spec.md`, `tokens.json`) starts only after that approval.
+5. Commit the explorations, previews and brief on the spec branch, push, and open a PR titled `spec: DESIGN-BRIEF v<version>`. Its body links the brief, `docs/design/explorations/index.html` and the `previews/v<N>/` images.
+6. **STOP.** Summarise the brief, list the preview files, and give the PR URL exactly as `gh` printed it. Ask the owner to review the brief **and** the previews. To approve, the owner sets `status: approved`, `approved_by` and `approved_on` on that branch and merges (see "Spec PRs" in `AGENTS.md`). Agents can't. Phase 2 (`ui-spec.md`, `tokens.json`) starts only after that approval.
 
 ## Never
 
