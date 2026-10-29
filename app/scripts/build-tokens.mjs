@@ -1,7 +1,7 @@
 // Turns docs/design/tokens.json into src/styles/tokens.css (ADR-004). No dependencies.
 // Usage: node scripts/build-tokens.mjs [--check]
-import { readFileSync, writeFileSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
+import { readFileSync, realpathSync, writeFileSync } from 'node:fs'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 export const TOKENS_PATH = fileURLToPath(new URL('../../docs/design/tokens.json', import.meta.url))
 export const CSS_PATH = fileURLToPath(new URL('../src/styles/tokens.css', import.meta.url))
@@ -137,6 +137,7 @@ export function main({ check = false, tokensPath = TOKENS_PATH, cssPath = CSS_PA
   return 1
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+// Node loads the main module from its real path, but argv[1] keeps any symlink or junction, so compare real paths.
+if (process.argv[1] && pathToFileURL(realpathSync(process.argv[1])).href === import.meta.url) {
   process.exitCode = main({ check: process.argv.includes('--check') })
 }

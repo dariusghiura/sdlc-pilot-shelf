@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { spawnSync } from 'node:child_process'
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -209,5 +209,33 @@ describe('build-tokens main and --check (ADR-004)', () => {
     expect(result.stderr).toBe('')
     expect(result.status).toBe(0)
     expect(readFileSync(CSS_PATH, 'utf8').replace(/\r\n/g, '\n')).toBe(buildTokensCss(JSON.parse(readFileSync(TOKENS_PATH, 'utf8'))))
+  })
+})
+
+describe('build-tokens command line (ADR-004)', () => {
+  let dir
+
+  // A copy of the script in a throwaway checkout with a stale tokens.css, and a symlink (a junction on Windows) to it.
+  beforeEach(() => {
+    dir = mkdtempSync(join(tmpdir(), 'shelf-tokens-cli-'))
+    const real = join(dir, 'real')
+    mkdirSync(join(real, 'docs/design'), { recursive: true })
+    mkdirSync(join(real, 'app/scripts'), { recursive: true })
+    mkdirSync(join(real, 'app/src/styles'), { recursive: true })
+    writeFileSync(join(real, 'docs/design/tokens.json'), JSON.stringify(fixture()))
+    copyFileSync(fileURLToPath(new URL('./build-tokens.mjs', import.meta.url)), join(real, 'app/scripts/build-tokens.mjs'))
+    writeFileSync(join(real, 'app/src/styles/tokens.css'), buildTokensCss(fixture()).replace('1rem', '2rem'))
+    symlinkSync(real, join(dir, 'link'), 'junction')
+  })
+
+  afterEach(() => rmSync(dir, { recursive: true, force: true }))
+
+  it.each([
+    ['directly', 'real'],
+    ['through a symlink or junction', 'link'],
+  ])('AC-2: --check exits 1 on a stale tokens.css when the script is run %s', (_, root) => {
+    const result = spawnSync(process.execPath, [join(dir, root, 'app/scripts/build-tokens.mjs'), '--check'], { encoding: 'utf8' })
+    expect(result.stderr).toMatch(/src\/styles\/tokens\.css is stale/)
+    expect(result.status).toBe(1)
   })
 })

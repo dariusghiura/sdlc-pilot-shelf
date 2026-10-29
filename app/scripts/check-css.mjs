@@ -1,8 +1,8 @@
 // Rejects colour literals and px/rem/em lengths in every CSS file under src/ except tokens.css (ADR-004). No dependencies.
 // Usage: node scripts/check-css.mjs
-import { readdirSync, readFileSync } from 'node:fs'
+import { readdirSync, readFileSync, realpathSync } from 'node:fs'
 import { join, relative, sep } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 export const APP_DIR = fileURLToPath(new URL('..', import.meta.url))
 const GENERATED = 'src/styles/tokens.css'
@@ -103,6 +103,7 @@ export function main({ appDir = APP_DIR, log = console } = {}) {
   return failures === 0 ? 0 : 1
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+// Node loads the main module from its real path, but argv[1] keeps any symlink or junction, so compare real paths.
+if (process.argv[1] && pathToFileURL(realpathSync(process.argv[1])).href === import.meta.url) {
   process.exitCode = main()
 }

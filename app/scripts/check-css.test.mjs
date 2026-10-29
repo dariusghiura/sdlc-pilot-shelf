@@ -1,7 +1,9 @@
 // @vitest-environment node
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { spawnSync } from 'node:child_process'
+import { copyFileSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { findForbiddenLiterals, main } from './check-css.mjs'
 
@@ -112,5 +114,31 @@ describe('check-css main (ADR-004)', () => {
   it('AC-3: the CSS under app/src passes', () => {
     expect(main({ log })).toBe(0)
     expect(messages).toEqual([])
+  })
+})
+
+describe('check-css command line (ADR-004)', () => {
+  let dir
+
+  // A copy of the script in a throwaway app with one literal, and a symlink (a junction on Windows) to it.
+  beforeEach(() => {
+    dir = mkdtempSync(join(tmpdir(), 'shelf-css-cli-'))
+    const real = join(dir, 'real')
+    mkdirSync(join(real, 'scripts'), { recursive: true })
+    mkdirSync(join(real, 'src'), { recursive: true })
+    copyFileSync(fileURLToPath(new URL('./check-css.mjs', import.meta.url)), join(real, 'scripts/check-css.mjs'))
+    writeFileSync(join(real, 'src/bad.css'), '.a {\n  color: red;\n}\n')
+    symlinkSync(real, join(dir, 'link'), 'junction')
+  })
+
+  afterEach(() => rmSync(dir, { recursive: true, force: true }))
+
+  it.each([
+    ['directly', 'real'],
+    ['through a symlink or junction', 'link'],
+  ])('AC-3: exits 1 and names the literal when the script is run %s', (_, root) => {
+    const result = spawnSync(process.execPath, [join(dir, root, 'scripts/check-css.mjs')], { encoding: 'utf8' })
+    expect(result.stderr).toMatch(/src\/bad\.css:2: named colour "red"/)
+    expect(result.status).toBe(1)
   })
 })
