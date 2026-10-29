@@ -1,11 +1,11 @@
 ---
 id: ADR-004
 title: tokens.json to CSS custom properties with a dependency-free build script
-status: in-review
+status: approved
 version: 1.0.0
 based_on: { ARCH: 1.0.0 }
-approved_by:
-approved_on:
+approved_by: dariusghiura
+approved_on: 2026-10-29
 superseded_by:
 ---
 

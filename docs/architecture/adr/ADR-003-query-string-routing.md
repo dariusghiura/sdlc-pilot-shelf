@@ -1,11 +1,11 @@
 ---
 id: ADR-003
 title: Query-string routes on the History API, without a router library
-status: in-review
+status: approved
 version: 1.0.0
 based_on: { ARCH: 1.0.0 }
-approved_by:
-approved_on:
+approved_by: dariusghiura
+approved_on: 2026-10-29
 superseded_by:
 ---
 

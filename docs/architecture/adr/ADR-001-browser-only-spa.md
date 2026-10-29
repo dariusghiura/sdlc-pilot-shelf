@@ -1,12 +1,11 @@
 ---
 id: ADR-001
 title: Browser-only single-page app (React, Vite, TypeScript, IndexedDB, static hosting)
-status: in-review
+status: approved
 version: 1.0.0
 based_on: { ARCH: 1.0.0 }
-approved_by:
-approved_on:
-superseded_by:
+approved_by: dariusghiura
+approved_on: 2026-10-29
 ---
 
 # ADR-001: Browser-only single-page app (React, Vite, TypeScript, IndexedDB, static hosting)

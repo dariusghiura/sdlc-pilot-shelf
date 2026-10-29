@@ -1,11 +1,11 @@
 ---
 id: ADR-005
 title: Self-hosted Literata from Fontsource, with the weight and optical-size axes
-status: in-review
+status: approved
 version: 1.0.0
 based_on: { ARCH: 1.0.0 }
-approved_by:
-approved_on:
+approved_by: dariusghiura
+approved_on: 2026-10-29
 superseded_by:
 ---
 
