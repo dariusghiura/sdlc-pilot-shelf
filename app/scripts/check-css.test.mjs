@@ -68,6 +68,14 @@ describe('check-css (ADR-004)', () => {
     expect(findForbiddenLiterals(css)).toEqual([])
   })
 
+  it.each([
+    ['a string', '  content: "/*";'],
+    ['an unquoted url()', '  background: url(a/*b.png);'],
+    ['a comment, with a quote inside it', "  /* don't */"],
+  ])('AC-3: still reports literals after %s that contains comment or string characters', (_, line) => {
+    expect(findForbiddenLiterals(`.box {\n${line}\n  color: red;\n  /* x */\n}\n`)).toEqual([{ line: 3, problem: 'named colour "red"' }])
+  })
+
   it('AC-3: reports each literal on its own line', () => {
     const css = '.a {\n  margin: 0;\n  color: #000;\n}\n\n.b {\n  padding: 1rem 2px;\n}\n'
     expect(findForbiddenLiterals(css)).toEqual([

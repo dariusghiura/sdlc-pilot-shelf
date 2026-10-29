@@ -34,12 +34,14 @@ const BREAKPOINT = /\(\s*min-width\s*:\s*48rem\s*\)/gi
 
 const blank = (text) => text.replace(/[^\n]/g, ' ')
 
+// A comment, a string, or an unquoted url(), matched in one left-to-right pass so that "/*" inside a string or url() can't start a comment.
+const MASKED = /\/\*[\s\S]*?\*\/|(["'])((?:\\.|(?!\1)[^\\\n])*)\1|(url\()(?!\s*["'])([^)]*)\)/gi
+
 // Blanks comments, string contents and url() contents, keeping every offset and line break.
 function mask(css) {
-  return css
-    .replace(/\/\*[\s\S]*?\*\//g, blank)
-    .replace(/(["'])((?:\\.|(?!\1)[^\\\n])*)\1/g, (_, quote, body) => quote + blank(body) + quote)
-    .replace(/(url\()([^)]*)\)/gi, (_, open, body) => open + blank(body) + ')')
+  return css.replace(MASKED, (match, quote, string, open, url) =>
+    quote ? quote + blank(string) + quote : open ? open + blank(url) + ')' : blank(match),
+  )
 }
 
 function matches(pattern, text, offset, describe) {
