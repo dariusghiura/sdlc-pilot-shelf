@@ -1,11 +1,11 @@
 ---
 id: BACKLOG
 title: Shelf — MVP Backlog
-status: in-review
+status: approved
 version: 1.0.0
 based_on: { PRD: 1.1.0, UI-SPEC: 1.1.0, ARCH: 1.0.1 }
-approved_by:
-approved_on:
+approved_by: dariusghiura
+approved_on: 2026-10-29
 ---
 
 # MVP backlog
