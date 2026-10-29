@@ -1,0 +1,106 @@
+/* Generated from TOKENS v1.0.0 (docs/design/tokens.json) by scripts/build-tokens.mjs. Do not edit: run npm run tokens. */
+
+:root {
+  color-scheme: light;
+  --color-surface-page: #F5F7F4;
+  --color-surface-field: #FFFFFF;
+  --color-surface-accent: #2A47A6;
+  --color-text-primary: #1B2140;
+  --color-text-muted: #545B6E;
+  --color-text-accent: #2A47A6;
+  --color-text-on-accent: #FFFFFF;
+  --color-text-error: #A1203A;
+  --color-border-field: #5E6478;
+  --color-border-field-invalid: #A1203A;
+  --color-border-accent: #2A47A6;
+  --color-control-radio-border: #5E6478;
+  --color-control-radio-fill: #FFFFFF;
+  --color-control-radio-checked: #2A47A6;
+  --color-focus-ring: #2A47A6;
+  --color-decoration-margin-rule: #E39AAE;
+  --font-family-body: Literata, Georgia, "Times New Roman", serif;
+  --font-weight-regular: 400;
+  --font-weight-heading: 450;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-reading: 650;
+  --font-size-body: 1rem;
+  --font-size-note: 1rem;
+  --font-size-author: 1.125rem;
+  --font-size-field: 1.125rem;
+  --font-size-control: 1rem;
+  --font-size-title: 1.375rem;
+  --font-size-heading: 2.125rem;
+  --font-size-wordmark: 1.375rem;
+  --font-line-height-body: 1.5;
+  --font-line-height-heading: 1.1;
+  --font-line-height-title: 1.25;
+  --font-line-height-note: 1.4;
+  --font-line-height-field: 1.4;
+  --font-line-height-control: 1.2;
+  --font-letter-spacing-heading: -0.01em;
+  --font-letter-spacing-wordmark: 0.01em;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --layout-breakpoint: 48rem;
+  --layout-measure: 40rem;
+  --layout-gutter: 1rem;
+  --layout-margin-width: 1.25rem;
+  --layout-margin-gap: 1.25rem;
+  --layout-margin-inset: 1rem;
+  --layout-field-error-offset: 0.6rem;
+  --size-target-min: 2.75rem;
+  --size-field-min-height: 3rem;
+  --size-radio: 1.25rem;
+  --size-radio-dot: 0.625rem;
+  --border-width-field: 2px;
+  --border-width-field-invalid: 3px;
+  --border-width-button: 2px;
+  --border-width-radio: 2px;
+  --border-width-margin-rule: 2px;
+  --border-width-underline: 1px;
+  --radius-control: 3px;
+  --radius-focus: 2px;
+  --focus-width: 3px;
+  --focus-offset: 3px;
+  --focus-offset-field: 2px;
+  --text-underline-offset: 0.2em;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --color-surface-page: #141A2C;
+    --color-surface-field: #1B2238;
+    --color-surface-accent: #A8B9FF;
+    --color-text-primary: #E7E9F1;
+    --color-text-muted: #A9AFC3;
+    --color-text-accent: #A8B9FF;
+    --color-text-on-accent: #141A2C;
+    --color-text-error: #FF9DB0;
+    --color-border-field: #8D94AB;
+    --color-border-field-invalid: #FF9DB0;
+    --color-border-accent: #A8B9FF;
+    --color-control-radio-border: #8D94AB;
+    --color-control-radio-fill: #1B2238;
+    --color-control-radio-checked: #A8B9FF;
+    --color-focus-ring: #A8B9FF;
+    --color-decoration-margin-rule: #8E4A61;
+  }
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --font-size-title: 1.75rem;
+    --font-size-heading: 2.75rem;
+    --font-size-wordmark: 1.5rem;
+    --layout-gutter: 2rem;
+    --layout-margin-width: 12rem;
+    --layout-margin-gap: 1.75rem;
+  }
+}
