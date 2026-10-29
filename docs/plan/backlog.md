@@ -2,7 +2,7 @@
 id: BACKLOG
 title: Shelf — MVP Backlog
 status: approved
-version: 1.0.0
+version: 1.0.1
 based_on: { PRD: 1.1.0, UI-SPEC: 1.1.0, ARCH: 1.0.1 }
 approved_by: dariusghiura
 approved_on: 2026-10-29
@@ -32,23 +32,23 @@ This backlog splits the Now scope of the [PRD](../product/prd.md) v1.1.0 into sm
 
 | Key | Title (outcome) | Type | Area | Size | Prio | Requirements | UX | ADRs | Blocked by | Issue # |
 |---|---|---|---|---|---|---|---|---|---|---|
-| S-01 | Design tokens become CSS, and raw values are rejected | chore | frontend | S | P0 | NFR-001 | UX-101 (base styles) | ADR-004 | — | |
-| S-02 | Shelf opens on its own page frame, set in Literata | feature | frontend | S | P0 | NFR-001, NFR-002, NFR-004 (FR-001 Loading state) | UX-101, UX-001 (Loading) | ADR-004, ADR-005, ADR-007 | S-01 | |
-| S-03 | Production builds carry the Content-Security-Policy | chore | infra | XS | P0 | NFR-004 | — | ADR-006, ADR-003 | S-02 | |
-| S-04 | Books are stored in IndexedDB behind the `BookRepository` port | chore | db | M | P0 | FR-006, NFR-003, NFR-004 | — | ADR-002, ADR-007 | — | |
-| S-05 | A first visit shows the empty library | feature | frontend | S | P0 | FR-002, FR-006, NFR-001, NFR-002 | UX-002, UX-101, UX-103 | ADR-002, ADR-003, ADR-007 | S-02, S-04 | |
-| S-06 | When the library can't be read, Shelf says so and offers to try again | feature | frontend | S | P0 | FR-006, FR-002, NFR-001, NFR-002 | UX-006, UX-101, UX-103 | ADR-002, ADR-003 | S-05 | |
-| S-07 | A QA build seeds the sample library and can make writes fail | chore | infra | S | P0 | NFR-004 | — | ADR-003 | S-05 | |
-| S-08 | The library lists every book in title order | feature | frontend | M | P0 | FR-001, NFR-001, NFR-002, NFR-003 | UX-001, UX-101, UX-102, UX-103, UX-104 | ADR-003, ADR-004 | S-07 | |
-| S-09 | The reader can open the add form and cancel back to the library | feature | frontend | M | P0 | FR-001, FR-002, FR-003, NFR-001, NFR-002 | UX-003, UX-101, UX-103, UX-104, UX-105, UX-106 | ADR-003 | S-08 | |
-| S-10 | The reader can save a new book and see it in the library | feature | frontend | S | P0 | FR-003, FR-001, FR-006 | UX-003, UX-001, UX-102 | ADR-002, ADR-003 | S-09 | |
-| S-11 | The add form says what to fix when the details break the rules | feature | frontend | S | P0 | FR-003, NFR-001 | UX-003, UX-105 | — | S-10 | |
-| S-12 | A new book that can't be stored is reported, not shown as saved | feature | frontend | S | P0 | FR-006, FR-003, NFR-001 | UX-003, UX-107 | ADR-002 | S-10 | |
-| S-13 | End-to-end checks run J1 in a real browser | chore | infra | M | P0 | FR-006, NFR-001, NFR-002, NFR-004 | UX-001, UX-002, UX-003, UX-006 | ADR-007, ADR-006 | S-03, S-06, S-11, S-12 | |
-| S-14 | The reader can edit a book | feature | frontend | M | P0 | FR-004, FR-001, FR-006, NFR-001, NFR-002 | UX-004, UX-101, UX-103, UX-104, UX-105, UX-106, UX-107 | ADR-002, ADR-003 | S-11, S-12, S-13 | |
-| S-15 | The reader can delete a book after confirming | feature | frontend | M | P0 | FR-005, FR-002, FR-001, FR-006, NFR-001, NFR-002 | UX-005, UX-002, UX-101, UX-103, UX-104, UX-107 | ADR-002, ADR-003 | S-12 | |
-| S-16 | End-to-end checks cover J2, J3, Back and a 500-book library | chore | infra | S | P0 | NFR-003, NFR-001, NFR-002, FR-004, FR-005, FR-006 | UX-004, UX-005 | ADR-007 | S-13, S-14, S-15 | |
-| S-17 | An owner-run deploy workflow publishes Shelf to GitHub Pages (owner runs it) | chore | infra | S | P1 | NFR-004, NFR-002 | — | ADR-006 | S-03, S-16 | |
+| S-01 | Design tokens become CSS, and raw values are rejected | chore | frontend | S | P0 | NFR-001 | UX-101 (base styles) | ADR-004 | — | #10 |
+| S-02 | Shelf opens on its own page frame, set in Literata | feature | frontend | S | P0 | NFR-001, NFR-002, NFR-004 (FR-001 Loading state) | UX-101, UX-001 (Loading) | ADR-004, ADR-005, ADR-007 | S-01 | #11 |
+| S-03 | Production builds carry the Content-Security-Policy | chore | infra | XS | P0 | NFR-004 | — | ADR-006, ADR-003 | S-02 | #12 |
+| S-04 | Books are stored in IndexedDB behind the `BookRepository` port | chore | db | M | P0 | FR-006, NFR-003, NFR-004 | — | ADR-002, ADR-007 | — | #13 |
+| S-05 | A first visit shows the empty library | feature | frontend | S | P0 | FR-002, FR-006, NFR-001, NFR-002 | UX-002, UX-101, UX-103 | ADR-002, ADR-003, ADR-007 | S-02, S-04 | #14 |
+| S-06 | When the library can't be read, Shelf says so and offers to try again | feature | frontend | S | P0 | FR-006, FR-002, NFR-001, NFR-002 | UX-006, UX-101, UX-103 | ADR-002, ADR-003 | S-05 | #15 |
+| S-07 | A QA build seeds the sample library and can make writes fail | chore | infra | S | P0 | NFR-004 | — | ADR-003 | S-05 | #16 |
+| S-08 | The library lists every book in title order | feature | frontend | M | P0 | FR-001, NFR-001, NFR-002, NFR-003 | UX-001, UX-101, UX-102, UX-103, UX-104 | ADR-003, ADR-004 | S-07 | #17 |
+| S-09 | The reader can open the add form and cancel back to the library | feature | frontend | M | P0 | FR-001, FR-002, FR-003, NFR-001, NFR-002 | UX-003, UX-101, UX-103, UX-104, UX-105, UX-106 | ADR-003 | S-08 | #18 |
+| S-10 | The reader can save a new book and see it in the library | feature | frontend | S | P0 | FR-003, FR-001, FR-006 | UX-003, UX-001, UX-102 | ADR-002, ADR-003 | S-09 | #19 |
+| S-11 | The add form says what to fix when the details break the rules | feature | frontend | S | P0 | FR-003, NFR-001 | UX-003, UX-105 | — | S-10 | #20 |
+| S-12 | A new book that can't be stored is reported, not shown as saved | feature | frontend | S | P0 | FR-006, FR-003, NFR-001 | UX-003, UX-107 | ADR-002 | S-10 | #21 |
+| S-13 | End-to-end checks run J1 in a real browser | chore | infra | M | P0 | FR-006, NFR-001, NFR-002, NFR-004 | UX-001, UX-002, UX-003, UX-006 | ADR-007, ADR-006 | S-03, S-06, S-11, S-12 | #22 |
+| S-14 | The reader can edit a book | feature | frontend | M | P0 | FR-004, FR-001, FR-006, NFR-001, NFR-002 | UX-004, UX-101, UX-103, UX-104, UX-105, UX-106, UX-107 | ADR-002, ADR-003 | S-11, S-12, S-13 | #23 |
+| S-15 | The reader can delete a book after confirming | feature | frontend | M | P0 | FR-005, FR-002, FR-001, FR-006, NFR-001, NFR-002 | UX-005, UX-002, UX-101, UX-103, UX-104, UX-107 | ADR-002, ADR-003 | S-12 | #24 |
+| S-16 | End-to-end checks cover J2, J3, Back and a 500-book library | chore | infra | S | P0 | NFR-003, NFR-001, NFR-002, FR-004, FR-005, FR-006 | UX-004, UX-005 | ADR-007 | S-13, S-14, S-15 | #25 |
+| S-17 | An owner-run deploy workflow publishes Shelf to GitHub Pages (owner runs it) | chore | infra | S | P1 | NFR-004, NFR-002 | — | ADR-006 | S-03, S-16 | #26 |
 
 **Parallel work.** S-04 has no blocker and can run beside S-01 to S-03. S-03 and S-07 can run beside S-06. S-11 and S-12 can run side by side. S-14 and S-15 can run side by side once their blockers are merged.
 
@@ -557,3 +557,4 @@ Nothing is published until the owner approves this backlog. Then each slice beco
 | Version | Date | Change | Decided by |
 |---|---|---|---|
 | 1.0.0 | 2026-10-29 | Initial backlog: 17 slices (10 feature, 7 chore) in three milestones covering the Now scope of PRD v1.1.0 against UI-SPEC v1.1.0 and ARCH v1.0.1, with a coverage check, open questions BQ-1 to BQ-5, publishing notes and a recommended first slice. | Drafted by an AI agent; for owner review |
+| 1.0.1 | 2026-10-29 | PATCH: issue numbers after publishing; no content change. Section 2's "Issue #" column now holds #10 to #26 (BQ-1). | Drafted by an AI agent; for owner review |
