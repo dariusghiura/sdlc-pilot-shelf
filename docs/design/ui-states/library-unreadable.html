@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your library couldn't be opened — Shelf</title>
+  <script>
+    // Theme hook used by capture-previews.mjs (?theme=light|dark); falls back to the OS preference.
+    const q = new URLSearchParams(location.search).get('theme');
+    document.documentElement.dataset.theme = q || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  </script>
+  <!-- Reference prototype only: the product self-hosts Literata (NFR-004). -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shelf.css">
+</head>
+<body>
+  <!-- UX-006 (UI-SPEC v1.1.0): the stored library couldn't be read (FR-006 AC-4), shown in place of the page that was asked for.
+       A heading, one sentence and the one "Try again" button; no "Add a book", no empty library, nothing in the margin. -->
+  <a class="skip-link" href="#main">Skip to the message</a>
+  <div class="sheet">
+    <header class="masthead lined">
+      <p class="wordmark margin">Shelf</p>
+    </header>
+
+    <main id="main">
+      <div class="intro lined">
+        <h1 tabindex="-1">Your library couldn't be opened</h1>
+        <p class="meta">Your browser didn't let Shelf read the books saved here. Try again, or check that this browser allows sites to store data.</p>
+      </div>
+      <div class="lined">
+        <p class="empty-action"><button class="button" type="button">Try again</button></p>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

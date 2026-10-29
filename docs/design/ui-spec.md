@@ -1,11 +1,11 @@
 ---
 id: UI-SPEC
 title: Shelf — UI Specification (Phase 2)
-status: approved
-approved_by: dariusghiura
-approved_on: 2026-10-29
-version: 1.0.0
-based_on: { PRD: 1.0.0, DESIGN-BRIEF: 1.0.0 }
+status: in-review
+approved_by:
+approved_on:
+version: 1.1.0
+based_on: { PRD: 1.1.0, DESIGN-BRIEF: 1.0.1 }
 ---
 
 # Shelf — UI Specification (Phase 2: implementation contract)
@@ -15,7 +15,7 @@ This spec turns the approved [design brief](design-brief.md) (direction "Margin 
 Reference images:
 
 - `previews/v1/` (approved with DESIGN-BRIEF v1.0.0): the library and the add form after a failed save, at desktop and mobile, in light and dark.
-- `ui-states/` (new with this spec, approved with it): the states the brief did not render. These are the [empty library](ui-states/empty-library-desktop-light.png), the [delete confirmation](ui-states/delete-book-desktop-light.png), the [edit form after a save failure](ui-states/edit-book-save-failed-desktop-light.png) and the [add form with two field errors](ui-states/add-book-two-errors-desktop-light.png). Each was rendered at 1440×900, 390×844 and 320×640 in both themes by `capture-previews.mjs` (evidence in `ui-states/previews.json`, contact sheet `ui-states/index.html`). The prototypes share `ui-states/shelf.css`, whose custom properties carry the token values.
+- `ui-states/` (new with this spec, approved with it): the states the brief did not render. These are the [empty library](ui-states/empty-library-desktop-light.png), the [delete confirmation](ui-states/delete-book-desktop-light.png), the [edit form after a save failure](ui-states/edit-book-save-failed-desktop-light.png), the [add form with two field errors](ui-states/add-book-two-errors-desktop-light.png) and, new in v1.1.0, the [library that couldn't be opened](ui-states/library-unreadable-desktop-light.png). Each was rendered at 1440×900, 390×844 and 320×640 in both themes by `capture-previews.mjs` (evidence in `ui-states/previews.json`, contact sheet `ui-states/index.html`). The prototypes share `ui-states/shelf.css`, whose custom properties carry the token values.
 
 The sample content for every screen is the shared content in [content.md](explorations/content.md): the 12-book library and the copy.
 
@@ -28,6 +28,7 @@ The sample content for every screen is the shared content in [content.md](explor
 | UX-003 | Add a book (a page of its own) | Record a new book. | FR-003, FR-006 | [add-book-desktop-light](previews/v1/add-book-desktop-light.png), [add-book-two-errors-desktop-light](ui-states/add-book-two-errors-desktop-light.png) |
 | UX-004 | Edit book (a page of its own, for one book) | Change one book's details. | FR-004, FR-006 | [edit-book-save-failed-desktop-light](ui-states/edit-book-save-failed-desktop-light.png) |
 | UX-005 | Delete confirmation (a page of its own, for one book) | Confirm before a book is removed. | FR-005, FR-006 | [delete-book-desktop-light](ui-states/delete-book-desktop-light.png) |
+| UX-006 | Library couldn't be opened (shown in place of any page when the stored library can't be read) | Say the library couldn't be opened and offer to try again, instead of showing the empty library. | FR-006, FR-002 | [library-unreadable-desktop-light](ui-states/library-unreadable-desktop-light.png) |
 
 ```text
 Library (UX-001, or UX-002 when empty)
@@ -35,6 +36,10 @@ Library (UX-001, or UX-002 when empty)
   ├─ "Edit <title>" ───► Edit book (UX-004) ───── "Save changes" saved ─► Library, the saved book in view
   └─ "Delete <title>" ─► Delete "<title>"? (UX-005) ─ "Delete book" ────► Library (or the empty library)
 "Cancel", the "Shelf" wordmark or the browser's Back on UX-003/004/005 ──► Library, unchanged
+
+Shelf opened on any page, and the stored library can't be read ──► Library couldn't be opened (UX-006)
+  └─ "Try again" ─┬─ the library is read ──► the page that was opened (UX-001 to UX-005)
+                  └─ it fails again ───────► UX-006 again, focus on its heading (F15)
 ```
 
 Navigation rules:
@@ -43,7 +48,8 @@ Navigation rules:
 - **Each page is its own browser history entry**, so Back from UX-003, UX-004 or UX-005 returns to the library. The exact paths are an implementation freedom (Stage C). The Edit and Delete pages identify their book, so they can be reloaded.
 - **After a successful save or a confirmed delete,** the library replaces the form or confirmation page in the history. Back from that library does not reopen the submitted form or the confirmation.
 - **A book that no longer exists** (for example a reloaded Edit page after the book was deleted) leads to the library, as if Cancel had been chosen, with no message (F14 in §2).
-- **Page titles** (the document title) are the page's `h1` followed by " — Shelf": "Your library — Shelf", "Your library is empty — Shelf", "Add a book — Shelf", "Edit book — Shelf", "Delete “Dune”? — Shelf".
+- **When the stored library can't be read** as Shelf opens, UX-006 is shown in place of whichever page was asked for (FR-006 AC-4). UX-006 has no address of its own: the address stays the requested page's, and "Try again" continues to that page when the library is read (FR-006 edge case). Back and Forward between Shelf's own pages show UX-006 again until the library has been read, because no page can be shown without it. Reloading reads the library again from the start (F1).
+- **Page titles** (the document title) are the page's `h1` followed by " — Shelf": "Your library — Shelf", "Your library is empty — Shelf", "Add a book — Shelf", "Edit book — Shelf", "Delete “Dune”? — Shelf", "Your library couldn't be opened — Shelf".
 
 ## 2. Global rules
 
@@ -62,7 +68,7 @@ Navigation rules:
   |---|---|---|---|---|---|---|
   | Wordmark "Shelf" | `{font.size.wordmark.*}` | `{font.weight.medium}` | italic | `{font.line-height.body}` | `{theme.*.text.primary}` | letter-spacing `{font.letter-spacing.wordmark}` |
   | Page heading (`h1`) | `{font.size.heading.*}` | `{font.weight.heading}` | normal | `{font.line-height.heading}` | `{theme.*.text.primary}` | letter-spacing `{font.letter-spacing.heading}`; wraps anywhere |
-  | Line under the heading (count line, empty-library sentence, delete sentence) | `{font.size.body}` | `{font.weight.regular}` | normal | `{font.line-height.body}` | `{theme.*.text.muted}` | `{space.3}` below the heading |
+  | Line under the heading (count line, empty-library sentence, delete sentence, read-failure sentence) | `{font.size.body}` | `{font.weight.regular}` | normal | `{font.line-height.body}` | `{theme.*.text.muted}` | `{space.3}` below the heading |
   | Book title | `{font.size.title.*}` | `{font.weight.medium}` | normal | `{font.line-height.title}` | `{theme.*.text.primary}` | wraps anywhere |
   | Author | `{font.size.author}` | `{font.weight.regular}` | italic | `{font.line-height.body}` | `{theme.*.text.muted}` | `{space.1}` above; wraps anywhere |
   | Status note: Want to read, Finished | `{font.size.note}` | `{font.weight.regular}` | italic | `{font.line-height.note}` | `{theme.*.text.muted}` | |
@@ -83,6 +89,7 @@ Navigation rules:
   - UX-002: skip link → "Add a book".
   - UX-003 and UX-004: skip link → "Shelf" (wordmark link) → Title → Author → Reading status (one Tab stop, the checked option) → "Add book" or "Save changes" → "Cancel".
   - UX-005: skip link → "Shelf" → "Delete book" → "Cancel".
+  - UX-006: skip link → "Try again".
 - **Focus movement** (the previews cannot show it; these rules are exact):
 
   | # | Event | Focus moves to | Scroll |
@@ -101,12 +108,13 @@ Navigation rules:
   | F12 | Browser Back from UX-003, UX-004 or UX-005 | As F10 or F11 when Shelf renders the library itself. When the browser restores the page from its own cache, the browser's focus and scroll restoration is acceptable. | As F10 or F11 |
   | F13 | Skip link activated | `main` | `main` in view |
   | F14 | UX-004 or UX-005 opened for a book that no longer exists | The library's `h1` (UX-001 or UX-002) | Top |
+  | F15 | "Try again" activated on UX-006 | If reading fails again: the `h1` "Your library couldn't be opened" of UX-006, so a screen reader announces it again. If the library is read: the `h1` of the page that was asked for (UX-001 to UX-005, or the library's for a book that no longer exists, as F14), as on every page change (D8, D13). | Top |
 
   No live regions are used. A message is announced because focus moves to it or to its field. The count line is not announced when it changes (open question UQ-3).
 - **Keyboard:** links open with Enter, and buttons activate with Enter or Space. Inside the status group, the arrow keys move and select, and Space selects. Enter in a text field saves the form, like its filled button. Escape does nothing: there are no overlays to close. Every function is reachable by keyboard alone (NFR-001).
 - **Motion:** none. Shelf has no transitions, animations or smooth scrolling, including when it scrolls to a saved book. There are no motion tokens, so `prefers-reduced-motion` needs no special case.
 - **Hover, pressed and disabled:** hover and press change nothing but the pointer cursor (shown on buttons, links and radio rows), as rendered (open question TQ-2). No control is ever disabled. Validation runs on save (FR-003 AC-4), so the save button always works.
-- **Copy conventions:** sentence case everywhere, and no all caps. The wording is exactly the copy in [content.md](explorations/content.md), with straight apostrophes ("can't", "wasn't") and curly quotes around the title in the delete heading (“Dune”). The count line pluralises in English with thousands separators: "1 book.", "12 books.", "1,000 books.", each followed by " Saved in this browser on this device." A visually hidden "Error: " starts every error message, and a visually hidden "Status: " starts every status note. The interface is English only (A12), with `lang="en"` on the document.
+- **Copy conventions:** sentence case everywhere, and no all caps. The wording is exactly the copy in [content.md](explorations/content.md), with straight apostrophes ("can't", "wasn't") and curly quotes around the title in the delete heading (“Dune”). UX-006's copy, which change request #6 added in content.md's style, is given word for word in UX-006. The count line pluralises in English with thousands separators: "1 book.", "12 books.", "1,000 books.", each followed by " Saved in this browser on this device." A visually hidden "Error: " starts every error message, and a visually hidden "Status: " starts every status note. The interface is English only (A12), with `lang="en"` on the document.
 - **Landmarks and structure:** every page has a skip link, a `header` (the masthead), a `main` and exactly one `h1`. The library is a list (`ul` with list semantics kept: `role="list"`, because the list style is removed). Each form has an accessible name from its `h1`. The only form controls are native ones: `input type="text"`, `input type="radio"` in a `fieldset` with a `legend`, and `button`.
 - **Reflow, zoom and spacing:** at 320 CSS px, and at 400% zoom of 1280px, nothing scrolls sideways: the document's `scrollWidth` is never larger than the viewport. Sizes are in rem, so browser text-size settings scale the whole layout. Heights are minimums, never fixed, so WCAG text-spacing overrides never clip text. At 200% zoom on a 1440px window the layout is the narrow one.
 - **Targets:** every link, button and radio row is at least `{size.target-min}` (44px) tall, and every link and button is at least 44px wide. The smallest measured on the references is the "Shelf" wordmark link, 51×44px on phones. A whole radio row, label included, selects its option; the 20px circle is not the only target.
@@ -170,7 +178,7 @@ Browser-drawn radios also differ between browsers (NFR-002), so their contrast c
   |---|---|---|---|
   | Loading | Shelf is opened and the stored books have not been read yet | The page frame and the masthead with the wordmark only. `main` stays empty: no heading, count, list or empty message, so the empty library never flashes before the books appear. There is no spinner and no placeholder. | UX-101 |
   | Empty | The library has no books (first visit, or the last book deleted) | UX-002 | UX-002 |
-  | Error | Reading the stored library fails | Not specified in v1.0.0: the PRD defines no behaviour for a failed read (open question UQ-2). | — |
+  | Error | Reading the stored library fails | UX-006, in place of this page (FR-006 AC-4). The empty library is never shown for a failed read. | UX-006 |
   | Success | One or more books | As the references: every book exactly once, in FR-001 order | UX-101, UX-102, UX-103, UX-104 |
   | Returning after a save | F7 | The library with the saved book's entry wholly in view and focused (no visible outline). The count line is current. | UX-102 |
   | Returning after a delete | F8 | The library without the deleted book. The count line is one lower, and the next entry is focused and in view. | UX-102 |
@@ -220,7 +228,7 @@ Browser-drawn radios also differ between browsers (NFR-002), so their contrast c
   |---|---|---|---|
   | Loading | As UX-001 | As UX-001: the empty library is never shown before the read completes | UX-101 |
   | Empty | No books | As the references: heading, sentence, button. There is no count line and no illustration, and nothing sits in the margin except the wordmark. | UX-101, UX-103 |
-  | Error | Reading fails | Not specified in v1.0.0 (UQ-2) | — |
+  | Error | Reading fails | UX-006, never this page (FR-006 AC-4, FR-002) | UX-006 |
   | Success | — | A library with books is UX-001 | UX-001 |
   | Disabled / no permission | — | Not used | — |
 
@@ -371,22 +379,65 @@ Browser-drawn radios also differ between browsers (NFR-002), so their contrast c
   - **VAC-4** At 320×640 light and dark, the page matches [delete-book-320x640-light.png](ui-states/delete-book-320x640-light.png) and [delete-book-320x640-dark.png](ui-states/delete-book-320x640-dark.png). With a 200-character title, the heading wraps in full and nothing scrolls sideways.
 - **Implementation freedoms:** how the page identifies its book; whether deletion is a form post or a script action, provided only "Delete book" removes the book.
 
+### UX-006 — Library couldn't be opened
+
+- **Implements:** FR-006 (AC-4 and its edge cases: a successful retry continues to the page the reader opened, and reading never changes or deletes stored books), FR-002 (the empty library is never shown for a failed read). Answers UQ-2 (change request [#6](https://github.com/dariusghiura/sdlc-pilot-shelf/issues/6)).
+- **Route:** none of its own. It is shown in place of whichever page was asked for (UX-001 to UX-005) when reading the stored library fails as Shelf opens, and the address stays that page's (§1).
+- **Reference:** [desktop light](ui-states/library-unreadable-desktop-light.png), [desktop dark](ui-states/library-unreadable-desktop-dark.png), [mobile light](ui-states/library-unreadable-mobile-light.png), [mobile dark](ui-states/library-unreadable-mobile-dark.png), [320 light](ui-states/library-unreadable-320x640-light.png), [320 dark](ui-states/library-unreadable-320x640-dark.png).
+- **Hierarchy:**
+  1. Skip link "Skip to the message" (UX-101)
+  2. Masthead: the wordmark "Shelf" as plain text, and nothing else. There is no "Add a book" button (FR-006 AC-4).
+  3. `main`:
+     1. `h1` "Your library couldn't be opened"
+     2. The sentence "Your browser didn't let Shelf read the books saved here. Try again, or check that this browser allows sites to store data." in the line-under-the-heading style
+     3. The "Try again" filled button (UX-103 as a button), `{space.6}` below the sentence and aligned with the text column
+- **Primary / secondary actions:** primary "Try again". There is no secondary action, and nothing on the page adds, edits or deletes books until the library has been read (FR-006 AC-4).
+- **States:**
+
+  | State | Trigger | What the user sees | Tokens / components |
+  |---|---|---|---|
+  | Loading | As UX-001 | As UX-001: the page frame and the wordmark only. UX-006 appears only once a read has failed. | UX-101 |
+  | Error: can't be read | Reading the stored library fails as Shelf opens, on any page (FR-006 AC-4) | As the references: heading, sentence, "Try again". There is no count line, list, empty-library message or "Add a book", and nothing sits in the margin except the wordmark. Focus is at the browser default (F1). | UX-101, UX-103 |
+  | Trying again | "Try again" activated | The library is read again, with no page reload. The page stays exactly as it is while the read runs, and a second activation is ignored (UX-103, D14). | UX-103 |
+  | Error: still can't be read | The read fails again | The page stays, unchanged, and focus moves to its `h1` (F15), so a screen reader announces it again. | UX-101 |
+  | Success | The read succeeds | The page the reader asked for, as if Shelf had just opened on it: UX-001 or UX-002 for the library, otherwise UX-003, UX-004 or UX-005, or the library when that book no longer exists (F14). Focus is on that page's `h1` (F15). The stored books are unchanged (FR-006 edge case). | UX-001 to UX-005 |
+  | Disabled / no permission | — | Not used: "Try again" is never disabled | — |
+
+- **Validation rules:** none.
+- **Responsive behaviour:** the same in both layouts, apart from the wordmark's position (UX-101). The heading wraps to two lines on desktop and at 390px, and to three at 320px.
+- **Accessibility:**
+  - Landmarks are `header` and `main`; the skip link goes to `main` (F13).
+  - The heading states the condition, and the sentence says what the reader can do. The sentence is the line under the heading, not a field or save-failure message, so it has no hidden "Error: " prefix and no error colour.
+  - "Try again" is a native `button` (`type="button"`): it neither navigates nor submits a form.
+  - On first showing, nothing is focused (F1): the first Tab reaches the skip link, the second "Try again". After a failed retry, focus is on the `h1` (F15), and the next Tab reaches "Try again". No live region is used (§2).
+- **Visual acceptance criteria:**
+  - **VAC-1** At 1440×900 light, the page matches [library-unreadable-desktop-light.png](ui-states/library-unreadable-desktop-light.png):
+    - Only the wordmark is in the masthead.
+    - The `h1` starts 116px from the top, at the same place as on UX-001 and UX-002, and wraps to two lines.
+    - The sentence sits below it in `{theme.*.text.muted}`, with one filled "Try again" button `{space.6}` below the sentence.
+    - The margin and the rest of the page are empty: no count line, list, empty-library message or "Add a book".
+  - **VAC-2** At 1440×900 dark, the same holds against [library-unreadable-desktop-dark.png](ui-states/library-unreadable-desktop-dark.png).
+  - **VAC-3** At 390×844 light and dark, the page matches [library-unreadable-mobile-light.png](ui-states/library-unreadable-mobile-light.png) and [library-unreadable-mobile-dark.png](ui-states/library-unreadable-mobile-dark.png): the heading wraps to two lines, and the button is at the start of the text column.
+  - **VAC-4** At 320×640 light and dark, the page matches [library-unreadable-320x640-light.png](ui-states/library-unreadable-320x640-light.png) and [library-unreadable-320x640-dark.png](ui-states/library-unreadable-320x640-dark.png): the heading wraps to three lines, and "Try again" is wholly in view. Nothing scrolls sideways (`scrollWidth` ≤ 320).
+  - **VAC-5** After a failed retry, the screen is the same as before it at every size and theme. Only focus has moved, and the `h1` shows no outline.
+- **Implementation freedoms:** how the failed read is detected and classified (ARCH), and how the retry is carried out, provided it reads the library again without reloading the page and never writes to the stored library.
+
 ## 4. Components
 
 ### UX-101 — Page frame: sheet, margin rule, masthead, skip link
 
-- **Used by:** UX-001 to UX-005, which implement FR-001, FR-002, FR-003, FR-004 and FR-005.
+- **Used by:** UX-001 to UX-006, which implement FR-001, FR-002, FR-003, FR-004, FR-005 and FR-006 AC-4.
 - **Variants / props contract:**
-  - `wordmark`: `text` on the library pages (UX-001, UX-002), or `link` on UX-003, UX-004 and UX-005, where it returns to the library like Cancel.
+  - `wordmark`: `text` on the library pages (UX-001, UX-002) and on UX-006, or `link` on UX-003, UX-004 and UX-005, where it returns to the library like Cancel.
   - `headerAction`: the "Add a book" button on UX-001 only; none elsewhere.
-  - `skipLinkLabel`: "Skip to your library" (UX-001, UX-002), "Skip to the form" (UX-003, UX-004) or "Skip to the confirmation" (UX-005).
+  - `skipLinkLabel`: "Skip to your library" (UX-001, UX-002), "Skip to the form" (UX-003, UX-004), "Skip to the confirmation" (UX-005) or "Skip to the message" (UX-006).
 - **Layout:**
   - The sheet, grid and margin rule follow §2.
   - Masthead (`header`): padded `{space.5}` top and bottom, and at least `{size.target-min}` + 2 × `{space.5}` tall whether or not it holds the button, so every `h1` starts at the same place (116px from the top). Items are centred vertically.
     - Wide: the wordmark is right-aligned in the margin column, `{layout.margin-inset}` from the rule, and the header action sits at the right end of the text column.
     - Narrow: the wordmark is at the start of the text column, with the header action at its right end, `{space.4}` apart at least.
   - Wordmark link: `{size.target-min}` tall, not underlined, in the wordmark text style.
-  - Intro block (the `h1` and the line under it): `{space.6}` above. Below it, `{space.6}` on UX-001, UX-002 and UX-005, or `{space.5}` on the forms.
+  - Intro block (the `h1` and the line under it): `{space.6}` above. Below it, `{space.6}` on UX-001, UX-002, UX-005 and UX-006, or `{space.5}` on the forms.
   - Skip link: the first focusable element, off-screen until focused. Focused, it shows at `{space.2}` from the top and `{layout.gutter.*}` from the left, padded `{space.2}` `{space.4}`, on `{theme.*.surface.accent}`. Activating it focuses `main` (F13).
 - **States:** default. The skip link is visible only while focused, and the wordmark link has focus-visible (§2).
 - **Tokens:** `layout.*`, `space.5`, `space.6`, `space.7`, `size.target-min`, `border-width.margin-rule`, `theme.*.surface.page`, `theme.*.decoration.margin-rule`, `theme.*.surface.accent`, `theme.*.text.on-accent`, `font.size.wordmark.*`, `font.letter-spacing.wordmark`.
@@ -417,10 +468,10 @@ Browser-drawn radios also differ between browsers (NFR-002), so their contrast c
 
 ### UX-103 — Filled button
 
-- **Used by:** UX-001 and UX-002 ("Add a book", a link to UX-003), UX-003 ("Add book", submit), UX-004 ("Save changes", submit) and UX-005 ("Delete book", submit). Together they implement FR-001 AC-5, FR-002 AC-2, FR-003, FR-004 and FR-005.
+- **Used by:** UX-001 and UX-002 ("Add a book", a link to UX-003), UX-003 ("Add book", submit), UX-004 ("Save changes", submit), UX-005 ("Delete book", submit) and UX-006 ("Try again", a button). Together they implement FR-001 AC-5, FR-002 AC-2, FR-003, FR-004, FR-005 and FR-006 AC-4.
 - **Variants / props contract:**
   - `label`: one of the strings above.
-  - `as`: `link` (navigates) or `submit` (submits its form).
+  - `as`: `link` (navigates), `submit` (submits its form) or `button` (a `type="button"` that runs an action on its page without navigating; "Try again" on UX-006 only).
   - Exactly one filled button per page.
 - **Visual:**
   - Shape: at least `{size.target-min}` tall, padded `{space.5}` left and right, with a `{border-width.button}` solid `{theme.*.border.accent}` border and `{radius.control}` corners.
@@ -429,7 +480,7 @@ Browser-drawn radios also differ between browsers (NFR-002), so their contrast c
 - **States:**
   - Default and focus-visible (§2: the outline keeps `{radius.control}`).
   - Hover and pressed: no change beyond the pointer cursor (TQ-2).
-  - Disabled: not used. While a save is being stored, a second activation is ignored rather than drawn differently.
+  - Disabled: not used. While a save is being stored, or the library is being read again after "Try again", a second activation is ignored rather than drawn differently.
   - Error: not applicable.
 - **Tokens:** `size.target-min`, `space.5`, `border-width.button`, `radius.control`, `theme.*.surface.accent`, `theme.*.border.accent`, `theme.*.text.on-accent`, `font.size.control`, `font.weight.semibold`, `font.line-height.control`.
 
@@ -517,23 +568,23 @@ Browser-drawn radios also differ between browsers (NFR-002), so their contrast c
 
 ## 5. Open questions
 
-None of these block approval of v1.0.0. The proposed default applies unless the owner changes it in review.
+None of these block approval of v1.1.0. The proposed default applies unless the owner changes it in review.
 
 | # | Question | Proposed default | Decide in |
 |---|---|---|---|
-| UQ-1 | FR-007 (filter by status) and FR-008 (search) are Next, and the PRD says both are "to be refined before it enters the backlog". | Out of v1.0.0. Their controls and no-results states will be specified in a MINOR version (1.1.0) once the PRD refines them, in this spec's style. | When FR-007 and FR-008 are refined |
-| UQ-2 | Reading the stored library could fail (storage blocked or unreadable). The PRD defines no behaviour: FR-006 AC-3 covers saving only. | No read-failure UI in v1.0.0. Stage C states whether the chosen storage can fail on read. If it can, a PRD change request adds the behaviour and this spec gains a state. | Architecture (Stage C) |
+| UQ-1 | FR-007 (filter by status) and FR-008 (search) are Next, and the PRD says both are "to be refined before it enters the backlog". | Out of v1.1.0. Their controls and no-results states will be specified in a later MINOR version once the PRD refines them, in this spec's style. | When FR-007 and FR-008 are refined |
+| UQ-2 | Reading the stored library could fail (storage blocked or unreadable). The PRD defines no behaviour: FR-006 AC-3 covers saving only. | **Closed in v1.1.0.** Stage C found that reading the chosen storage (IndexedDB in the browser) can fail, and [change request #6](https://github.com/dariusghiura/sdlc-pilot-shelf/issues/6) added FR-006 AC-4. UX-006 specifies the page, and F15 its focus. | Closed by change request #6 (owner, 2026-10-29) |
 | UQ-3 | Should screen readers hear an explicit "Saved" or "Deleted" confirmation? No such copy exists. | No: moving focus to the saved book (F7) or to the next book (F8) is the confirmation, with no new copy. | Owner review |
 | UQ-4 | On the edit form, the Title message says "A book can't be added without one", because FR-004 AC-4 requires the same messages as FR-003. | Keep the PRD's rule and the same copy. | Owner review |
 | TQ-1 | Literata's optical-size axis (opsz 7–72): the previews were rendered with it, while the brief's default names only the weight axis. | Self-host it too, so the product matches the approved previews. | Owner review; file size in Stage C |
 | TQ-2 | Hover and pressed styles for buttons and links: the brief and previews define none. | None, as rendered: pointer cursor only. | Owner review |
 | TQ-3 | The radio drawing (UX-106) and its dot size (`{size.radio-dot}`, measured from the preview render, not in its CSS). | As specified. | Owner review |
 
-TQ-1 to TQ-3 are also recorded in `tokens.json` under `$extensions.sdlc.open_questions`. Behaviour with Shelf open in two tabs at once stays undefined (PRD Q9) and has no UI in v1.0.0.
+TQ-1 to TQ-3 are also recorded in `tokens.json` under `$extensions.sdlc.open_questions`. Behaviour with Shelf open in two tabs at once stays undefined (PRD Q9) and has no UI of its own in v1.1.0.
 
 ## 6. Decisions and change log
 
-Decisions taken in this spec. The first five apply the brief's approved defaults (brief §11); D6 to D12 are the agent's, for the owner to review with this spec.
+Decisions taken in this spec. The first five apply the brief's approved defaults (brief §11); D6 to D14 are the agent's, for the owner to review with this spec (D13 and D14 are new in v1.1.0).
 
 | # | Decision | Source |
 |---|---|---|
@@ -549,7 +600,10 @@ Decisions taken in this spec. The first five apply the brief's approved defaults
 | D10 | The Author field's length error uses the same placement as the Title error: in the margin on desktop, above the field on phones. | Brief §8 ("field errors") |
 | D11 | Edit and Delete are links (they open pages); "Add book", "Save changes" and "Delete book" are submit buttons. | Semantics of D1 and brief §4 |
 | D12 | After a failed save, the fields show the entered values trimmed of leading and trailing spaces, as content.md describes for the preview. | content.md, FR-003 AC-4 |
+| D13 | When "Try again" succeeds, focus moves to the `h1` of the page that was asked for (F15). Change request #6 states focus only for a retry that fails again; this applies D8, because the button that had focus disappears. | D8, NFR-001 |
+| D14 | While the retry reads the library, UX-006 stays as it is (no Loading frame) and a second activation is ignored, as UX-103 already does for saves. #6 says "the page stays" on a failure; this keeps it in place during the read too, so focus is never lost. | Change request #6, UX-103 |
 
 | Version | Date | Change | Decided by |
 |---|---|---|---|
 | 1.0.0 | 2026-10-29 | Initial UI spec from DESIGN-BRIEF v1.0.0 and PRD v1.0.0. It covers FR-001 to FR-006 with all their states, applies the brief's five approved defaults (D1 to D5), and adds the token-drawn radio (D6) after measuring contrast. New state references are in `ui-states/`. | Drafted by an AI agent; for owner review |
+| 1.1.0 | 2026-10-29 | [Change request #6](https://github.com/dariusghiura/sdlc-pilot-shelf/issues/6), approved as proposed, against PRD 1.1.0 (FR-006 AC-4) and DESIGN-BRIEF 1.0.1. New page UX-006 "Your library couldn't be opened" with "Try again", in place of any page when the stored library can't be read: inventory row, navigation, page title, skip link, states, focus order, focus rule F15, accessibility and VAC-1 to VAC-5, with the new reference `ui-states/library-unreadable-*`. The "Not specified" Error rows of UX-001 and UX-002 now point to UX-006. UX-101 and UX-103 are used by UX-006, and UX-103 gains the `button` variant. UQ-2 is closed. D13 and D14 record the two points #6 left open. UQ-1 no longer names version 1.1.0, which this change uses. No token is added or changed. | dariusghiura (change request #6); drafted by an AI agent |
