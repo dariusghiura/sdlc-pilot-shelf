@@ -2,8 +2,8 @@
 id: ARCH
 title: Shelf — Architecture
 status: approved
-version: 1.0.0
-based_on: { PRD: 1.0.0, DESIGN-BRIEF: 1.0.0, UI-SPEC: 1.0.0 }
+version: 1.0.1
+based_on: { PRD: 1.1.0, DESIGN-BRIEF: 1.0.1, UI-SPEC: 1.1.0 }
 approved_by: dariusghiura
 approved_on: 2026-10-29
 ---
@@ -12,7 +12,7 @@ approved_on: 2026-10-29
 
 Shelf is a single-page app that runs entirely in the reader's browser. Static files come from a static host. The books live in the browser's IndexedDB on the reader's device, and nothing is sent back. The owner chose this stack on 2026-10-29 (ADR-001).
 
-This document is written against [PRD](../product/prd.md) v1.0.0, [DESIGN-BRIEF](../design/design-brief.md) v1.0.0, [UI-SPEC](../design/ui-spec.md) v1.0.0 and [TOKENS](../design/tokens.json) v1.0.0. The [data model](data-model.md) and the [implementation guidelines](implementation-guidelines.md) are derived from it. The walking skeleton in [`app/`](../../app/package.json) proves the toolchain; it implements no product feature.
+This document is written against [PRD](../product/prd.md) v1.1.0, [DESIGN-BRIEF](../design/design-brief.md) v1.0.1, [UI-SPEC](../design/ui-spec.md) v1.1.0 and [TOKENS](../design/tokens.json) v1.0.0. The [data model](data-model.md) and the [implementation guidelines](implementation-guidelines.md) are derived from it. The walking skeleton in [`app/`](../../app/package.json) proves the toolchain; it implements no product feature.
 
 ## 1. Context and drivers
 
@@ -21,10 +21,10 @@ This document is written against [PRD](../product/prd.md) v1.0.0, [DESIGN-BRIEF]
 | The library belongs to one browser on one device; there is no sync. | A1, FR-006, NFR-004 | The data stays in the browser (IndexedDB). There is no server, account or identifier (ADR-001, ADR-002). |
 | No sign-in, no personal data, no analytics or third-party content. | NFR-004, A11 | There is no backend and no HTTP API. Every file comes from Shelf's own origin, under a Content-Security-Policy that allows only `'self'` (ADR-006), and the font is self-hosted (ADR-005). |
 | Changes survive reloads and later visits, and a failed save is reported. | FR-006 AC-1 to AC-3, UX-107 | A write reports success only after its IndexedDB transaction completes. The storage port returns typed failures (section 7). |
-| Reading the stored library can fail too. | UI-SPEC UQ-2 | The storage port reports read failures, and the app never shows the empty library for one. The reader-facing behaviour waits for [change request #6](https://github.com/dariusghiura/sdlc-pilot-shelf/issues/6) (section 13). |
+| Reading the stored library can fail too. | FR-006 AC-4, UX-006 | The storage port reports read failures. The shell's `unreadable` state shows UX-006 in place of any page and never the empty library, and "Try again" reads again (section 4). |
 | Title order ignoring case, with ties in the order the books were added. | FR-001 AC-2, AC-3 | Books are sorted in memory with an English collator. Ties are broken by the auto-increment key (DATA-MODEL §2). |
 | Each page is its own history entry, Edit and Delete pages can be reloaded, and the library replaces a submitted page in the history. | UI-SPEC §1, UX-003, UX-004, UX-005 | Query-string routes on the History API, served by one static `index.html` (ADR-003). |
-| Exact focus and scroll rules F1 to F14, with no live regions. | UI-SPEC §2, NFR-001 | The app shell owns a one-shot focus-intent mechanism (section 5.5). |
+| Exact focus and scroll rules F1 to F15, with no live regions. | UI-SPEC §2, NFR-001 | The app shell owns a one-shot focus-intent mechanism (section 5.5). |
 | Every visual value is a token, and light and dark follow the device. | UI-SPEC §2, TOKENS | A build script turns `tokens.json` into CSS custom properties. Component CSS contains no raw values (ADR-004). |
 | Literata, self-hosted, with the weight and optical-size axes. | DESIGN-BRIEF §6, UI-SPEC D5 and TQ-1 | Fontsource's Literata files are bundled and served from Shelf's origin (ADR-005). |
 | 500 books, with every entry in the document. | NFR-003, UI-SPEC §2 | One `getAll()` at start-up and one plain list: no pagination and no virtualisation. |
@@ -55,7 +55,7 @@ Paths are relative to `app/`. The rules in the last two columns are enforced by 
 | `src/books/` | Domain: the `Book` type, reading statuses and their labels, trimming and validation (FR-003 rules), library order (FR-001) | None (pure functions) | Nothing | React, `src/storage`, `src/app`, `src/pages`, `src/components` |
 | `src/storage/` | The `BookRepository` port and its IndexedDB adapter. It maps IndexedDB errors to `StorageError` (section 7). | The IndexedDB database `shelf` | `src/books` | React, `src/app`, `src/pages`, `src/components`; network APIs |
 | `src/app/` | App shell: the start-up read, library state in memory, routes and navigation, focus intents and scroll memory, document titles. It calls the repository and passes data and callbacks to pages. | Library state (memory); the current route (URL) | `src/books`, `src/storage`, `src/pages`, `src/components` | Network APIs; `localStorage`, `sessionStorage` |
-| `src/pages/` | One component per page: UX-001/UX-002, UX-003, UX-004, UX-005 (and the read-failure page once #6 is approved). Each owns its form state and messages. | Form state while open | `src/books`, `src/components` | `src/app`, `src/storage` |
+| `src/pages/` | One component per page: UX-001/UX-002, UX-003, UX-004, UX-005 and the read-failure page UX-006. Each owns its form state and messages. | Form state while open | `src/books`, `src/components` | `src/app`, `src/storage` |
 | `src/components/` | Presentational components UX-101 to UX-107 | None | `src/books` (types, labels) | `src/app`, `src/pages`, `src/storage` |
 | `src/styles/` | `tokens.css` (generated), `fonts.css`, `base.css` (reset, focus ring, visually hidden text) | None | Generated from `docs/design/tokens.json` | — |
 | `src/qa/` (QA builds only) | Visual-QA fixtures: seed the sample library, make writes fail (section 10) | None | `src/storage`, `src/books` | Production builds (excluded at build time) |
@@ -72,7 +72,10 @@ Paths are relative to `app/`. The rules in the last two columns are enforced by 
 3. On success, it keeps the books in memory, ordered by `sortLibrary` (DATA-MODEL §2), and renders the requested page.
    - An Edit or Delete route for a missing book is replaced by the library (F14).
    - Focus is not moved (F1).
-4. On failure, the shell enters the `unreadable` state. It never renders UX-002 for it. What the reader sees is decided by #6.
+4. On failure, the shell enters the `unreadable` state. It renders UX-006 in place of the requested page and never UX-002 for it (FR-006 AC-4). The URL is left as it is.
+   - "Try again" calls `listBooks()` again, without a reload. After a failed open the adapter holds no connection, so the call opens the database afresh (section 7, rule 4). The state stays `unreadable` while the read runs, so UX-006 stays on screen, and a second activation is ignored (UI-SPEC D14).
+   - On success the shell continues from step 3 for the same route, and focuses that page's `h1` instead of applying F1. On failure UX-006 stays and its `h1` is focused (F15).
+   - While `unreadable`, `popstate` renders UX-006 again for the new URL (UI-SPEC §1), and a reload starts again at step 1.
 
 **Add (FR-003, FR-006 AC-2, AC-3).**
 
@@ -145,7 +148,7 @@ Literata is self-hosted from `@fontsource-variable/literata` (ADR-005, resolving
 - **Cost:** for an English library the browser downloads only the Latin files: 110,080 bytes (normal) and 113,180 bytes (italic). Other subsets load only when a title uses their characters.
 - **Licence:** the SIL Open Font License text ships with the build.
 
-### 5.5 Focus and scroll (F1 to F14)
+### 5.5 Focus and scroll (F1 to F15)
 
 **Mechanism.** Before a navigation, the shell records a **focus intent**.
 
@@ -167,6 +170,7 @@ Literata is self-hosted from `@fontsource-variable/literata` (ADR-005, resolving
 | F12 | Shell, on `popstate` back to the library | As F10/F11 | As F10/F11 |
 | F13 | Skip link click handler (default prevented, so the URL is unchanged) | `main` | `main` brought into view |
 | F14 | Shell, during route resolution | The library's `h1` | Top |
+| F15 | Shell, when the read after "Try again" resolves | Failed: UX-006's `h1`. Read: the `h1` of the page for the current route (F14's target for a missing book) | Top |
 
 The library's scroll position is remembered in memory when the reader leaves the library for another page. After a reload there is none, and the library opens at the top.
 
@@ -226,7 +230,7 @@ export type StorageResult<T> =
   | { readonly ok: false; readonly error: StorageError }
 
 export interface BookRepository {
-  /** Every stored book in creation order (ascending id). A failure here is a read failure (#6). */
+  /** Every stored book in creation order (ascending id). A failure here is a read failure (FR-006 AC-4, UX-006). */
   listBooks(): Promise<StorageResult<readonly Book[]>>
   /** Stores a new book; resolves after the transaction commits. */
   addBook(details: BookDetails): Promise<StorageResult<Book>>
@@ -296,7 +300,7 @@ Not applicable: there are no accounts and no sign-in (NFR-004). The browser's sa
 |---|---|---|---|
 | Unit | Vitest 5 (verified) | `src/books`: trimming and validation (FR-003 AC-4 to AC-6, character counting), order (FR-001 AC-2, AC-3). Route parsing (ADR-003). Token mapping and the CSS check (ADR-004). | `npm test`, locally and in `app-check` |
 | Storage | Vitest + fake-indexeddb (planned) | The `BookRepository` contract (section 7): commit before success, creation order, `null` for a missing book, error mapping with simulated failures, upgrades from every earlier schema version (DATA-MODEL §5) | `npm test` |
-| Component | Vitest + Testing Library + jsdom (verified) + user-event (planned) | Pages UX-001 to UX-005 with a fake repository: states, exact copy, accessible names, keyboard paths, focus rules F2 to F11, F13 and F14, and no double add | `npm test` |
+| Component | Vitest + Testing Library + jsdom (verified) + user-event (planned) | Pages UX-001 to UX-006 with a fake repository: states, exact copy, accessible names, keyboard paths, focus rules F2 to F11 and F13 to F15, and no double add | `npm test` |
 | Accessibility, automated | axe-core in component tests (planned); `@axe-core/playwright` in the browser (planned) | NFR-001's automated part on every screen and state. jsdom covers structure, names and ARIA; the browser adds colour contrast and computed styles. | `npm test`, end-to-end suite |
 | End-to-end | Playwright (planned): Chromium in CI, Firefox and WebKit locally before release | J1 to J3 in a real browser: persistence across reloads (FR-006 AC-1, AC-2), browser Back (F12), reloading Edit and Delete pages, 320px reflow (`scrollWidth` ≤ viewport), no request off-origin and no CSP violation (NFR-004), a 500-book library (NFR-003) | Planned `npm run test:e2e`; added to CI by its own issue |
 | Visual QA | [`capture-previews.mjs`](../../.sdlc/scripts/capture-previews.mjs) `--url` against `vite preview` of a QA build; Playwright screenshots for states behind a form submission | UI-SPEC VACs: captures beside `previews/v1/` and `ui-states/` at desktop, mobile and 320×640, light and dark | Locally, in every UI issue before its PR; images go in the PR |
@@ -322,7 +326,7 @@ Not applicable: there are no accounts and no sign-in (NFR-004). The browser's sa
 |---|---|---|
 | Invalid details | `src/books` validation | Field messages (UX-105), focus F5 |
 | Write failed | Repository `ok: false` | UX-107, focus F6. Memory and screen unchanged (FR-006 AC-3). |
-| Read failed at start-up | `listBooks` `ok: false` | `unreadable` state, never the empty library. Behaviour per #6. |
+| Read failed at start-up | `listBooks` `ok: false` | `unreadable` state: UX-006 in place of the requested page, never the empty library (FR-006 AC-4). "Try again" reads again, with focus F15. |
 | Book no longer exists | Route resolution or `updateBook` returning `null` | The library, with F14 |
 | Unexpected script error (a bug) | Not handled in v1 | Nothing specified (OQ-5); logged to the console |
 
@@ -347,7 +351,7 @@ Not applicable: there are no accounts and no sign-in (NFR-004). The browser's sa
 
 | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|
-| Reading the library fails (blocked storage, a newer schema, platform errors), and the PRD defines no behaviour (UQ-2). | Medium | High: a reader could believe the library is empty | Reads report failures (section 7), and the shell never shows UX-002 for one. [Change request #6](https://github.com/dariusghiura/sdlc-pilot-shelf/issues/6) proposes the behaviour, with sources. |
+| Reading the library fails (blocked storage, a newer schema, platform errors). | Medium | High: the reader can't reach their books until a read succeeds | Reads report failures (section 7). The shell shows UX-006 with "Try again", never UX-002, and writes nothing meanwhile (FR-006 AC-4, settled by [change request #6](https://github.com/dariusghiura/sdlc-pilot-shelf/issues/6), with sources). A cause that persists, such as a newer schema after a rollback, keeps UX-006 until it is fixed. |
 | The browser deletes the library without an error: private windows end; Safari deletes script-written storage after seven days of use without interaction with the site; best-effort eviction under storage pressure. | Medium for Safari users | High for that reader | Accepted in PRD A1 and R1. No `navigator.storage.persist()` in v1 (OQ-1). Export and import are in Later. |
 | All GitHub Pages sites of the account share the origin `https://dariusghiura.github.io`, so any of them could read or change Shelf's database. | Low: the owner controls the account | Medium | OQ-2: a custom domain before Shelf is shared more widely |
 | Framing (clickjacking) can't be blocked: no response headers on Pages. | Low | Low | Deleting takes two pages. Revisit with a host that sets headers. |
@@ -365,7 +369,7 @@ Not applicable: there are no accounts and no sign-in (NFR-004). The browser's sa
 | OQ-5 | Unexpected script errors have no specified UI. | None in v1: console only | Owner review |
 | OQ-6 | Make `app-check` a required status check on `main`? | The owner's choice (a ruleset setting); the PR explains how | Owner |
 
-UI-SPEC TQ-1 (optical-size axis) is resolved by ADR-005 as proposed, with the file sizes in section 5.4. UQ-2 goes to #6.
+UI-SPEC TQ-1 (optical-size axis) is resolved by ADR-005 as proposed, with the file sizes in section 5.4. UI-SPEC UQ-2 is closed by change request #6: FR-006 AC-4 and UX-006.
 
 ## 14. Decision index
 
@@ -384,3 +388,4 @@ UI-SPEC TQ-1 (optical-size axis) is resolved by ADR-005 as proposed, with the fi
 | Version | Date | Change | Decided by |
 |---|---|---|---|
 | 1.0.0 | 2026-10-29 | Initial architecture: browser-only SPA (owner's stack decision, ADR-001), storage port, query-string routing, tokens and font pipeline, CSP, testing strategy, walking skeleton in `app/`. Change request #6 raised for UQ-2. | dariusghiura (stack); drafted by an AI agent |
+| 1.0.1 | 2026-10-29 | PATCH for [change request #6](https://github.com/dariusghiura/sdlc-pilot-shelf/issues/6): `based_on` refreshed to PRD 1.1.0, DESIGN-BRIEF 1.0.1 and UI-SPEC 1.1.0. The forward references to #6 now cite FR-006 AC-4 and UX-006: drivers (section 1), `src/pages` (section 3), the start-up flow (section 4, step 4, which maps "Try again" onto the existing `listBooks()` and `unreadable` state), the F15 row (section 5.5), the component-test row (section 10), the error table (section 11) and the read-failure risk (section 13). No design change: the storage contract, the modules, the reducer states and the ADRs are unchanged. | Drafted by an AI agent; for owner review |

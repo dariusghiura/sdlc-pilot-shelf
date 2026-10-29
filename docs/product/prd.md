@@ -2,10 +2,10 @@
 id: PRD
 title: Shelf — Product Requirements
 status: approved
-version: 1.0.0
+version: 1.1.0
 based_on: {}
 approved_by: dariusghiura
-approved_on: 2026-10-28
+approved_on: 2026-10-29
 ---
 
 # Shelf — Product Requirements
@@ -155,7 +155,8 @@ A **book** has exactly these details (assumptions A2–A4):
   - **AC-1** Given the reader has added, edited or deleted books, when they close Shelf and open it again later in the same browser on the same device, then the library shows exactly the books and details as they were last saved.
   - **AC-2** Given a change has been saved (the form closed after saving, or a deletion was confirmed), when the reader reloads Shelf straight away, then the change is present.
   - **AC-3** Given a change cannot be saved, when the reader saves it, then Shelf tells the reader that the change was not saved and does not show it as saved.
-- **Edge cases:** If the reader clears their browser's stored data, or uses another browser or device, they see a different (possibly empty) library (assumption A1, risk R1). Behaviour with Shelf open in two tabs at the same time is not defined for the MVP (open question Q9).
+  - **AC-4** Given the stored library cannot be read when Shelf opens, when any page of Shelf is shown, then Shelf says that the library couldn't be opened and offers to try again. It does not show the empty library (FR-002), and it offers no way to add, edit or delete books until the library has been read.
+- **Edge cases:** If the reader clears their browser's stored data, or uses another browser or device, they see a different (possibly empty) library (assumption A1, risk R1). Behaviour with Shelf open in two tabs at the same time is not defined for the MVP (open question Q9). A successful retry continues to the page the reader opened. Reading never changes or deletes stored books.
 - **Notes / dependencies:** No sign-in (NFR-004), so the library belongs to the browser and device it was created on (assumption A1).
 
 ### FR-007 — Filter the library by reading status
@@ -262,3 +263,4 @@ Each question has a stated default; the default applies unless the owner changes
 | Version | Date | Change | Decided by |
 |---|---|---|---|
 | 1.0.0 | 2026-10-28 | Initial PRD from discovery: owner accepted the five proposed scope defaults (product, Now, Next, NFRs); remaining details are agent defaults listed in section 8 and section 10. | dariusghiura (scope); drafted by an AI agent |
+| 1.1.0 | 2026-10-29 | Change request [#6](https://github.com/dariusghiura/sdlc-pilot-shelf/issues/6), approved as proposed: FR-006 gains AC-4 (the stored library can't be read when Shelf opens) and an edge case (a successful retry continues to the page the reader opened; reading never changes or deletes stored books). This answers UI-SPEC open question UQ-2. No open question or risk in this PRD is settled: the browser deleting the library without an error stays with A1 and R1, and two open tabs stay with Q9, as #6 says. | dariusghiura (change request #6); drafted by an AI agent |

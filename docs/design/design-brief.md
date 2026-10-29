@@ -2,10 +2,10 @@
 id: DESIGN-BRIEF
 title: Shelf — Design Brief (Phase 1)
 status: approved
-version: 1.0.0
-based_on: { PRD: 1.0.0 }
+version: 1.0.1
+based_on: { PRD: 1.1.0 }
 approved_by: dariusghiura
-approved_on: 2026-10-28
+approved_on: 2026-10-29
 ---
 
 # Shelf — Design Brief (Phase 1: visual intent)
@@ -113,3 +113,4 @@ Intent and rationale only. The exploration's working values are recorded in its 
 | Version | Date | Change | Decided by |
 |---|---|---|---|
 | 1.0.0 | 2026-10-28 | Initial brief. The owner chose Direction 01 Margin notes from three rendered directions (01 Margin notes, 02 Ledger, 03 Bedside stack), with no refinements. Phase 1 inputs: all five proposed defaults accepted. Previews: `previews/v1/`. | dariusghiura (choice); drafted by an AI agent |
+| 1.0.1 | 2026-10-29 | `based_on` refreshed to PRD 1.1.0 ([change request #6](https://github.com/dariusghiura/sdlc-pilot-shelf/issues/6) added FR-006 AC-4). Nothing else changes: the read-failure page (UI-SPEC UX-006) follows this brief as written. The refresh is needed because the kit compares MAJOR.MINOR, so a brief based on PRD 1.0.0 would be stale against 1.1.0 and fail every downstream gate. | Drafted by an AI agent; for owner review |
