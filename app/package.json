@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "oxlint --deny-warnings",
+    "lint": "oxlint --deny-warnings && node scripts/build-tokens.mjs --check && node scripts/check-css.mjs",
+    "tokens": "node scripts/build-tokens.mjs",
     "typecheck": "tsc -b",
     "test": "vitest run",
     "preview": "vite preview"

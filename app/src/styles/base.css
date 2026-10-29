@@ -1,0 +1,45 @@
+/* Base styles (ARCH §5.3, UI-SPEC §2): reset, page colours, focus indicator and visually hidden text. Values come only from tokens.css. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+body {
+  background-color: var(--color-surface-page);
+  color: var(--color-text-primary);
+}
+
+/* Focus indicator: every focusable control, on keyboard focus. */
+:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/* Programmatic focus targets that are not controls (h1, entries, messages, main) show no outline. */
+[tabindex="-1"]:focus {
+  outline: none;
+}
+
+/* Read by screen readers, never painted ("Error: ", "Status: ", hidden titles). The box stays non-zero so
+   screen readers keep it, is clipped to nothing, and is too small to cause sideways scrolling. */
+.visually-hidden {
+  position: absolute;
+  inline-size: 1%;
+  block-size: 1%;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
