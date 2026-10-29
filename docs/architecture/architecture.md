@@ -1,11 +1,11 @@
 ---
 id: ARCH
 title: Shelf — Architecture
-status: in-review
+status: approved
 version: 1.0.1
 based_on: { PRD: 1.1.0, DESIGN-BRIEF: 1.0.1, UI-SPEC: 1.1.0 }
-approved_by:
-approved_on:
+approved_by: dariusghiura
+approved_on: 2026-10-29
 ---
 
 # Shelf — Architecture

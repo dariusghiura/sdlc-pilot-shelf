@@ -1,11 +1,11 @@
 ---
 id: DESIGN-BRIEF
 title: Shelf — Design Brief (Phase 1)
-status: in-review
+status: approved
 version: 1.0.1
 based_on: { PRD: 1.1.0 }
-approved_by:
-approved_on:
+approved_by: dariusghiura
+approved_on: 2026-10-29
 ---
 
 # Shelf — Design Brief (Phase 1: visual intent)
